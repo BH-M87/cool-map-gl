@@ -8,20 +8,24 @@ import getMapStyle from './libs/getMapStyle';
 import AutoSizer from './utils/AutoSizer';
 import getIconLayer from './layers/getIconLayer';
 import getPathLayer from './layers/getPathLayer';
+import getEditableGeoJsonLayer from './layers/getEditableGeoJsonLayer';
 
 function MapGL({
   width,
   height,
   mapStyle,
   iconData,
-  pathData,
   onIconClick,
+  pathData,
+  editData,
+  editMode,
+  onEdit,
   viewState: _viewState,
   onViewStateChange,
   onMapLoad,
   onMapClick,
   onMapHover,
-  mapLayers,
+  layers,
 }) {
   const [viewState, setViewState] = useState(defaultViewState);
 
@@ -54,7 +58,8 @@ function MapGL({
           layers={[
             ...getIconLayer(iconData, { onClick: onIconClick }),
             ...getPathLayer(pathData),
-            ...(Array.isArray(mapLayers) ? mapLayers : []),
+            ...(Array.isArray(layers) ? layers : []),
+            ...getEditableGeoJsonLayer({ data: editData, mode: editMode }, { onEdit }),
           ]}
           onLoad={onMapLoad}
           onClick={onMapClick}
@@ -98,8 +103,41 @@ MapGL.propTypes = {
       properties: PropTypes.object,
     }),
   ),
-  pathData: PropTypes.arrayOf(PropTypes.object),
   onIconClick: PropTypes.func,
+  pathData: PropTypes.arrayOf(PropTypes.object),
+  // eslint-disable-next-line react/forbid-prop-types
+  editData: PropTypes.object,
+  editMode: PropTypes.oneOf([
+    'GeoJsonEditMode',
+    'ModifyMode',
+    'TranslateMode',
+    'ScaleMode',
+    'RotateMode',
+    'DuplicateMode',
+    'ExtendLineStringMode',
+    'SplitPolygonMode',
+    'ExtrudeMode',
+    'ElevationMode',
+    'TransformMode',
+    'DrawPointMode',
+    'DrawLineStringMode',
+    'DrawPolygonMode',
+    'DrawRectangleMode',
+    'DrawCircleByDiameterMode',
+    'DrawCircleFromCenterMode',
+    'DrawEllipseByBoundingBoxMode',
+    'DrawEllipseUsingThreePointsMode',
+    'DrawRectangleUsingThreePointsMode',
+    'Draw90DegreePolygonMode',
+    'DrawPolygonByDraggingMode',
+    'ViewMode',
+    'MeasureDistanceMode',
+    'MeasureAreaMode',
+    'MeasureAngleMode',
+    'CompositeMode',
+    'SnappableMode',
+  ]),
+  onEdit: PropTypes.func,
   viewState: PropTypes.shape({
     longitude: PropTypes.number,
     latitude: PropTypes.number,
@@ -110,7 +148,7 @@ MapGL.propTypes = {
   onMapClick: PropTypes.func,
   onMapHover: PropTypes.func,
   // eslint-disable-next-line react/no-unused-prop-types
-  mapLayers: PropTypes.arrayOf(PropTypes.object),
+  layers: PropTypes.arrayOf(PropTypes.object),
 };
 
 MapGL.defaultProps = {
@@ -120,6 +158,10 @@ MapGL.defaultProps = {
     // returns a truthy value, the click event is marked as handled
     // and will not bubble up to the onMapClick callback.
     return true;
+  },
+  onEdit: ({ updatedData, editType, featureIndexes, editContext }) => {
+    // eslint-disable-next-line no-console
+    console.log({ updatedData, editType, featureIndexes, editContext });
   },
   onMapLoad: () => {
     // eslint-disable-next-line no-console
@@ -131,7 +173,7 @@ MapGL.defaultProps = {
   },
   onMapHover: (info, event) => {
     // eslint-disable-next-line no-console
-    console.log(info, event);
+    // console.log(info, event);
   },
 };
 
