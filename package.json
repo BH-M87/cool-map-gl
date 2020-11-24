@@ -37,7 +37,6 @@
     "@deck.gl/react": "^8.1.7",
     "@nebula.gl/layers": "^0.18.1",
     "@nebula.gl/overlays": "^0.18.4",
-    "@turf/difference": "6.0.1",
     "immutable": "^4.0.0-rc.12",
     "nebula.gl": "^0.18.1",
     "react-map-gl": "^5.2.5",

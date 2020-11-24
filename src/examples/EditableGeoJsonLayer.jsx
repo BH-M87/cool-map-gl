@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MapGL, { EditableGeoJsonLayer, DrawEllipseByBoundingBoxMode } from '..';
+import MapGL, { EditableGeoJsonLayer, DrawPolygonMode } from '..';
 
 const selectedFeatureIndexes = [];
 function getData(data) {
@@ -29,7 +29,7 @@ const EditableGeoJson = () => {
         new EditableGeoJsonLayer({
           id: 'geojson-layer',
           data: getData(data),
-          mode: DrawEllipseByBoundingBoxMode,
+          mode: DrawPolygonMode,
           selectedFeatureIndexes: Array.isArray(selectedFeatureIndexes)
             ? selectedFeatureIndexes
             : [],

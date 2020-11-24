@@ -30,7 +30,7 @@ function MapGL({
   const [viewState, setViewState] = useState(defaultViewState);
 
   useEffect(() => {
-    if (onViewStateChange) {
+    if (_viewState && onViewStateChange) {
       return;
     }
     setViewState(v => ({
@@ -51,7 +51,9 @@ function MapGL({
           onViewStateChange={({ viewState: vs }) => {
             if (onViewStateChange) {
               onViewStateChange(vs);
-              return;
+              if (_viewState) {
+                return;
+              }
             }
             setViewState(vs);
           }}

@@ -26,6 +26,9 @@ export default (data, events = {}) => {
       billboard: false,
       getPosition: d => d.coordinates,
       getSize: d => d.height || d.width || ICON_SIZE,
+      transitions: {
+        getPosition: 500,
+      },
       ...events,
     }),
   ];
