@@ -8,6 +8,7 @@ import getMapStyle from './libs/getMapStyle';
 import AutoSizer from './utils/AutoSizer';
 import getIconLayer from './layers/getIconLayer';
 import getPathLayer from './layers/getPathLayer';
+import getHeatmapLayer from './layers/getHeatmapLayer';
 import getEditableGeoJsonLayer from './layers/getEditableGeoJsonLayer';
 
 function MapGL({
@@ -17,6 +18,7 @@ function MapGL({
   iconData,
   onIconClick,
   pathData,
+  heatmapData,
   editData,
   editMode,
   onEdit,
@@ -60,6 +62,7 @@ function MapGL({
           layers={[
             ...getIconLayer(iconData, { onClick: onIconClick }),
             ...getPathLayer(pathData),
+            ...getHeatmapLayer(heatmapData),
             ...(Array.isArray(layers) ? layers : []),
             ...getEditableGeoJsonLayer({ data: editData, mode: editMode }, { onEdit }),
           ]}
@@ -102,11 +105,18 @@ MapGL.propTypes = {
       height: PropTypes.number,
       anchorX: PropTypes.number,
       anchorY: PropTypes.number,
+      // eslint-disable-next-line react/forbid-prop-types
       properties: PropTypes.object,
     }),
   ),
   onIconClick: PropTypes.func,
   pathData: PropTypes.arrayOf(PropTypes.object),
+  heatmapData: PropTypes.arrayOf(
+    PropTypes.shape({
+      COORDINATES: PropTypes.arrayOf(PropTypes.number),
+      WEIGHT: PropTypes.number,
+    }),
+  ),
   // eslint-disable-next-line react/forbid-prop-types
   editData: PropTypes.object,
   editMode: PropTypes.oneOf([

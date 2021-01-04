@@ -16,30 +16,32 @@
     "build": "father build"
   },
   "peerDependencies": {
-    "react": "16.x",
+    "react": "17.x",
     "prop-types": "^15.x"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.1.0",
+    "eslint": "^7.14.0",
     "eslint-config-cool": "^0.3.3",
-    "father": "^2.29.3",
+    "father": "^2.30.0",
     "immutable": "^4.0.0-rc.12",
-    "prettier-eslint": "^10.1.0",
+    "prettier-eslint": "^12.0.0",
     "prettier-eslint-cli": "^5.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.12.0"
   },
   "dependencies": {
-    "@deck.gl/core": "^8.1.7",
-    "@deck.gl/layers": "^8.1.7",
-    "@deck.gl/mesh-layers": "^8.1.7",
-    "@deck.gl/react": "^8.1.7",
-    "@nebula.gl/layers": "^0.18.1",
-    "@nebula.gl/overlays": "^0.18.4",
+    "@deck.gl/aggregation-layers": "^8.3.9",
+    "@deck.gl/core": "^8.3.9",
+    "@deck.gl/layers": "^8.3.9",
+    "@deck.gl/mesh-layers": "^8.3.9",
+    "@deck.gl/react": "^8.3.9",
+    "@nebula.gl/layers": "^0.21.1",
+    "@nebula.gl/overlays": "^0.21.1",
+    "@turf/difference": "6.0.1",
     "immutable": "^4.0.0-rc.12",
-    "nebula.gl": "^0.18.1",
-    "react-map-gl": "^5.2.5",
+    "nebula.gl": "^0.21.1",
+    "react-map-gl": "^5.2.10",
     "react-virtualized-auto-sizer": "^1.0.2"
   }
 }
