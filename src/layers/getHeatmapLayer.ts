@@ -1,6 +1,7 @@
 import { HeatmapLayer } from '@deck.gl/aggregation-layers';
+import { HeatmapData } from 'typings';
 
-export default data => {
+export default (data?: HeatmapData[]) => {
   /**
    * Data format:
    * [
@@ -15,8 +16,8 @@ export default data => {
     new HeatmapLayer({
       id: 'heatmapLayer',
       data,
-      getPosition: d => d.COORDINATES,
-      getWeight: d => d.WEIGHT,
+      getPosition: (d) => d.COORDINATES,
+      getWeight: (d) => d.WEIGHT,
     }),
   ];
 };

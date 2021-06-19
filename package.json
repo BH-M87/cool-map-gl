@@ -20,6 +20,8 @@
     "prop-types": "^15.x"
   },
   "devDependencies": {
+    "@types/d3-interpolate": "^2.0.0",
+    "@types/react-virtualized-auto-sizer": "^1.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.14.0",
     "eslint-config-cool": "^0.3.3",
@@ -33,14 +35,16 @@
   "dependencies": {
     "@deck.gl/aggregation-layers": "^8.3.9",
     "@deck.gl/core": "^8.3.9",
+    "@deck.gl/geo-layers": "^8.4.17",
     "@deck.gl/layers": "^8.3.9",
     "@deck.gl/mesh-layers": "^8.3.9",
     "@deck.gl/react": "^8.3.9",
-    "@nebula.gl/layers": "^0.21.1",
-    "@nebula.gl/overlays": "^0.21.1",
+    "@nebula.gl/layers": "^0.22.3",
+    "@nebula.gl/overlays": "^0.22.3",
     "@turf/difference": "6.0.1",
+    "d3-interpolate": "^3.0.1",
     "immutable": "^4.0.0-rc.12",
-    "nebula.gl": "^0.21.1",
+    "nebula.gl": "^0.22.3",
     "react-map-gl": "^5.2.10",
     "react-virtualized-auto-sizer": "^1.0.2"
   }

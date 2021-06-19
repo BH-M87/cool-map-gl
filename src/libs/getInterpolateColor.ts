@@ -15,15 +15,15 @@ const COLOR_CONFIG = {
   1: '#a70f00',
 };
 
-const getI = (value, floor, upper) => {
+const getI = (value: number, floor: number, upper: number) => {
   // 在COLOR_CONFIG相邻两个颜色中取色值
   const i = interpolateRgb(COLOR_CONFIG[floor], COLOR_CONFIG[upper]);
   return i((Number(value) - floor * MAX_VALUE) / (MAX_VALUE * (upper - floor)));
 };
 
-export default indicatorValue => {
+export default (indicatorValue: number) => {
   const sortedColorConfigKey = Object.keys(COLOR_CONFIG)
-    .map(value => Number(value))
+    .map((value) => Number(value))
     .sort();
   if (indicatorValue <= 0) {
     return COLOR_CONFIG[sortedColorConfigKey[0]];
@@ -38,10 +38,7 @@ export default indicatorValue => {
       }
       return undefined;
     })
-    .find(value => !!value);
+    .find((value) => !!value);
 
-  return (
-    result ||
-    COLOR_CONFIG[sortedColorConfigKey[sortedColorConfigKey.length - 1]]
-  );
+  return result || COLOR_CONFIG[sortedColorConfigKey[sortedColorConfigKey.length - 1]];
 };

@@ -30,6 +30,7 @@ import {
   CompositeMode,
   SnappableMode,
 } from 'nebula.gl';
+import { AnyObject, EditorMode } from 'typings';
 
 const MODE = {
   GeoJsonEditMode,
@@ -62,7 +63,7 @@ const MODE = {
   SnappableMode,
 };
 
-function getData(data) {
+function getData(data?: any) {
   if (data === null) {
     return {
       type: 'FeatureCollection',
@@ -82,8 +83,12 @@ function getData(data) {
 }
 
 export default (
-  { data = null, mode = 'DrawPolygonMode', selectedFeatureIndexes } = {},
-  { onEdit } = {},
+  {
+    data = null,
+    mode = 'DrawPolygonMode',
+    selectedFeatureIndexes = [],
+  }: { data?: AnyObject | null; mode?: EditorMode; selectedFeatureIndexes?: any } = {},
+  { onEdit = console.log } = {},
 ) => {
   if (data === undefined) {
     return [];
@@ -92,9 +97,20 @@ export default (
     new EditableGeoJsonLayer({
       id: 'geojson-layer',
       data: getData(data),
+      // @ts-ignore
       mode: MODE[mode],
       selectedFeatureIndexes: Array.isArray(selectedFeatureIndexes) ? selectedFeatureIndexes : [],
-      onEdit: ({ updatedData, editType, featureIndexes, editContext }) => {
+      onEdit: ({
+        updatedData,
+        editType,
+        featureIndexes,
+        editContext,
+      }: {
+        updatedData: any;
+        editType: any;
+        featureIndexes: any;
+        editContext: any;
+      }) => {
         if (onEdit) {
           onEdit({ updatedData, editType, featureIndexes, editContext });
         }

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import MapGL, { EditableGeoJsonLayer, DrawPolygonMode } from '..';
 
-const selectedFeatureIndexes = [];
-function getData(data) {
+const selectedFeatureIndexes: any[] = [];
+
+function getData(data: any) {
   if (data === null) {
     return {
       type: 'FeatureCollection',
@@ -29,11 +30,12 @@ const EditableGeoJson = () => {
         new EditableGeoJsonLayer({
           id: 'geojson-layer',
           data: getData(data),
+          // @ts-ignore
           mode: DrawPolygonMode,
           selectedFeatureIndexes: Array.isArray(selectedFeatureIndexes)
             ? selectedFeatureIndexes
             : [],
-          onEdit: ({ updatedData }) => {
+          onEdit: ({ updatedData }: { updatedData: any }) => {
             setData(updatedData);
           },
         }),

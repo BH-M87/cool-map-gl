@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import DeckGL from '@deck.gl/react'; // The deck.gl master module includes all submodules except for `@deck.gl/test-utils`.
+import { Layer } from '@deck.gl/core';
+import { PickInfo } from '@deck.gl/core/lib/deck';
 import { StaticMap } from 'react-map-gl';
 import defaultViewState from './config/defaultViewState';
 import getMapStyle from './libs/getMapStyle';
@@ -10,6 +12,7 @@ import getIconLayer from './layers/getIconLayer';
 import getPathLayer from './layers/getPathLayer';
 import getHeatmapLayer from './layers/getHeatmapLayer';
 import getEditableGeoJsonLayer from './layers/getEditableGeoJsonLayer';
+import { AnyObject, EditorMode, HeatmapData, IconData, PathData } from 'typings';
 
 function MapGL({
   width,
@@ -28,6 +31,47 @@ function MapGL({
   onMapClick,
   onMapHover,
   layers,
+}: {
+  width?: number;
+  height?: number;
+  mapStyle?: {
+    version: number;
+    sources: {
+      rasterTile: {
+        type: 'raster';
+        tiles: string[];
+        tileSize: number;
+      };
+    };
+    layers: {
+      id: string;
+      type: 'raster';
+      source: string;
+    };
+  };
+  iconData?: IconData[];
+  onIconClick?: Function;
+  pathData?: PathData[];
+  heatmapData?: HeatmapData[];
+  editData?: AnyObject;
+  editMode?: EditorMode;
+  onEdit?: ({
+    updatedData,
+    editType,
+    featureIndexes,
+    editContext,
+  }: {
+    updatedData: any;
+    editType: any;
+    featureIndexes: any;
+    editContext: any;
+  }) => void;
+  viewState?: any;
+  onViewStateChange: Function;
+  onMapLoad: () => any;
+  onMapClick: <D>(info: PickInfo<D>, pickedInfos: PickInfo<D>[], e: MouseEvent) => any;
+  onMapHover: <D>(info: PickInfo<D>, pickedInfos: PickInfo<D>[], e: MouseEvent) => any;
+  layers: Layer<any>;
 }) {
   const [viewState, setViewState] = useState(defaultViewState);
 
@@ -35,7 +79,7 @@ function MapGL({
     if (_viewState && onViewStateChange) {
       return;
     }
-    setViewState(v => ({
+    setViewState((v) => ({
       ...v,
       _viewState,
     }));
@@ -164,14 +208,24 @@ MapGL.propTypes = {
 };
 
 MapGL.defaultProps = {
-  onIconClick: (info, event) => {
+  onIconClick: (info: any, event: any) => {
     // eslint-disable-next-line no-console
     console.log(info, event);
     // returns a truthy value, the click event is marked as handled
     // and will not bubble up to the onMapClick callback.
     return true;
   },
-  onEdit: ({ updatedData, editType, featureIndexes, editContext }) => {
+  onEdit: ({
+    updatedData,
+    editType,
+    featureIndexes,
+    editContext,
+  }: {
+    updatedData: any;
+    editType: any;
+    featureIndexes: any;
+    editContext: any;
+  }) => {
     // eslint-disable-next-line no-console
     console.log({ updatedData, editType, featureIndexes, editContext });
   },
@@ -179,11 +233,11 @@ MapGL.defaultProps = {
     // eslint-disable-next-line no-console
     console.log('MapGL loaded.');
   },
-  onMapClick: (info, event) => {
+  onMapClick: (info: any, event: any) => {
     // eslint-disable-next-line no-console
     console.log(info, event);
   },
-  onMapHover: (info, event) => {
+  onMapHover: (info: any, event: any) => {
     // eslint-disable-next-line no-console
     // console.log(info, event);
   },

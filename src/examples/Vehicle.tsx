@@ -2,15 +2,23 @@ import React, { useState, useEffect, useRef } from 'react';
 import MapGL from '..';
 import policeCarImg from '../assets/police_car.png';
 
-const STEP_SIZE = 0.0005*2;
+const STEP_SIZE = 0.0005 * 2;
+
+type IconData = {
+  image: string;
+  coordinates: Position;
+  width: number;
+  height: number;
+}[];
+
 const Vehicle = () => {
-  const [iconData, setIconData] = useState([]);
+  const [iconData, setIconData] = useState<IconData>([]);
   const viewState = useRef();
   const step = useRef(0);
   useEffect(() => {
-    let timeout = null;
+    let timeout: null | NodeJS.Timeout = null;
     function calData() {
-      const vehicleData = [
+      const vehicleData: IconData = [
         {
           image: policeCarImg,
           coordinates: [
@@ -40,7 +48,7 @@ const Vehicle = () => {
   return (
     <MapGL
       iconData={iconData}
-      onViewStateChange={vs => {
+      onViewStateChange={(vs) => {
         viewState.current = vs;
       }}
     />
