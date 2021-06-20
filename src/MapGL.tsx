@@ -34,7 +34,7 @@ function MapGL({
 }: {
   width?: number;
   height?: number;
-  mapStyle?: {
+  mapStyle: {
     version: number;
     sources: {
       rasterTile: {
@@ -67,11 +67,11 @@ function MapGL({
     editContext: any;
   }) => void;
   viewState?: any;
-  onViewStateChange: Function;
-  onMapLoad: () => any;
-  onMapClick: <D>(info: PickInfo<D>, pickedInfos: PickInfo<D>[], e: MouseEvent) => any;
-  onMapHover: <D>(info: PickInfo<D>, pickedInfos: PickInfo<D>[], e: MouseEvent) => any;
-  layers: Layer<any>;
+  onViewStateChange?: Function;
+  onMapLoad?: () => any;
+  onMapClick?: <D>(info: PickInfo<D>, pickedInfos: PickInfo<D>[], e: MouseEvent) => any;
+  onMapHover?: <D>(info: PickInfo<D>, pickedInfos: PickInfo<D>[], e: MouseEvent) => any;
+  layers?: Layer<any>;
 }) {
   const [viewState, setViewState] = useState(defaultViewState);
 
