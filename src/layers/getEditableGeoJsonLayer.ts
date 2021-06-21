@@ -84,7 +84,7 @@ function getData(data?: any) {
 
 export default (
   {
-    data = null,
+    data = undefined,
     mode = 'DrawPolygonMode',
     selectedFeatureIndexes = [],
   }: { data?: AnyObject | null; mode?: EditorMode; selectedFeatureIndexes?: any } = {},

@@ -14,7 +14,7 @@ import getHeatmapLayer from './layers/getHeatmapLayer';
 import getEditableGeoJsonLayer from './layers/getEditableGeoJsonLayer';
 import { AnyObject, EditorMode, HeatmapData, IconData, PathData } from 'typings';
 
-function MapGL({
+export function MapGL({
   width,
   height,
   mapStyle,
