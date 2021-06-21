@@ -60,7 +60,7 @@ type EditorMode =
   | 'SnappableMode';
 
 type IconData = {
-  image: string;
+  url: string;
   coordinates: Position;
   width?: number;
   height?: number;
