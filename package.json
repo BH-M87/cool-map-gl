@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@types/d3-interpolate": "^2.0.0",
+    "@types/lodash-es": "^4.17.4",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.14.0",
@@ -44,6 +45,7 @@
     "@turf/difference": "6.0.1",
     "d3-interpolate": "^3.0.1",
     "immutable": "^4.0.0-rc.12",
+    "lodash-es": "^4.17.21",
     "nebula.gl": "^0.22.3",
     "react-map-gl": "^5.2.10",
     "react-virtualized-auto-sizer": "^1.0.2"

@@ -31,3 +31,5 @@ export {
   CompositeMode,
   SnappableMode,
 } from 'nebula.gl';
+
+export { HtmlClusterOverlay, HtmlOverlay, HtmlOverlayItem } from '@nebula.gl/overlays';

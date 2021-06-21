@@ -3,16 +3,18 @@ import PropTypes from 'prop-types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import DeckGL from '@deck.gl/react'; // The deck.gl master module includes all submodules except for `@deck.gl/test-utils`.
 import { Layer } from '@deck.gl/core';
-import { PickInfo } from '@deck.gl/core/lib/deck';
+import { InteractiveState, PickInfo } from '@deck.gl/core/lib/deck';
 import { StaticMap } from 'react-map-gl';
-import defaultViewState from './config/defaultViewState';
+import systemDefaultViewState from './config/systemDefaultViewState';
 import getMapStyle from './libs/getMapStyle';
 import AutoSizer from './utils/AutoSizer';
 import getIconLayer from './layers/getIconLayer';
 import getPathLayer from './layers/getPathLayer';
 import getHeatmapLayer from './layers/getHeatmapLayer';
 import getEditableGeoJsonLayer from './layers/getEditableGeoJsonLayer';
-import { AnyObject, EditorMode, HeatmapData, IconData, PathData } from 'typings';
+import { AnyObject, EditorMode, HeatmapData, IconData, PathData, TripsData } from 'typings';
+import getTripsLayer from './layers/getTripsLayer';
+import { useCompare } from './libs/useCompare';
 
 export function MapGL({
   width,
@@ -22,30 +24,34 @@ export function MapGL({
   onIconClick,
   pathData,
   heatmapData,
+  tripsData,
   editData,
   editMode,
   onEdit,
   viewState: _viewState,
+  defaultViewState,
   onViewStateChange,
   onMapLoad,
   onMapClick,
   onMapHover,
+  getCursor,
   layers,
+  children,
 }: {
   width?: number;
   height?: number;
-  mapStyle: {
-    version: number;
-    sources: {
+  mapStyle?: {
+    version?: number;
+    sources?: {
       rasterTile: {
-        type: 'raster';
+        type: string;
         tiles: string[];
         tileSize: number;
       };
     };
-    layers: {
+    layers?: {
       id: string;
-      type: 'raster';
+      type: string;
       source: string;
     };
   };
@@ -53,6 +59,7 @@ export function MapGL({
   onIconClick?: Function;
   pathData?: PathData[];
   heatmapData?: HeatmapData[];
+  tripsData?: TripsData[];
   editData?: AnyObject;
   editMode?: EditorMode;
   onEdit?: ({
@@ -67,23 +74,22 @@ export function MapGL({
     editContext: any;
   }) => void;
   viewState?: any;
+  defaultViewState?: any;
   onViewStateChange?: Function;
   onMapLoad?: () => any;
   onMapClick?: <D>(info: PickInfo<D>, pickedInfos: PickInfo<D>[], e: MouseEvent) => any;
   onMapHover?: <D>(info: PickInfo<D>, pickedInfos: PickInfo<D>[], e: MouseEvent) => any;
+  getCursor: ((interactiveState: InteractiveState) => string) | undefined;
   layers?: Layer<any>;
+  children: JSX.Element | JSX.Element[];
 }) {
-  const [viewState, setViewState] = useState(defaultViewState);
-
-  useEffect(() => {
-    if (_viewState && onViewStateChange) {
-      return;
-    }
-    setViewState((v) => ({
+  const [viewState, setViewState] = useState(defaultViewState || systemDefaultViewState);
+  useCompare(_viewState, (vs: any) => {
+    setViewState((v: any) => ({
       ...v,
-      _viewState,
+      vs,
     }));
-  }, [_viewState, onViewStateChange]);
+  });
 
   return (
     <AutoSizer width={width} height={height}>
@@ -92,7 +98,8 @@ export function MapGL({
           width={_width}
           height={_height}
           useDevicePixels={false}
-          viewState={_viewState || viewState}
+          viewState={viewState}
+          getCursor={getCursor}
           controller
           onViewStateChange={({ viewState: vs }) => {
             if (onViewStateChange) {
@@ -107,6 +114,7 @@ export function MapGL({
             ...getIconLayer(iconData, { onClick: onIconClick }),
             ...getPathLayer(pathData),
             ...getHeatmapLayer(heatmapData),
+            ...getTripsLayer(tripsData),
             ...(Array.isArray(layers) ? layers : []),
             ...getEditableGeoJsonLayer({ data: editData, mode: editMode }, { onEdit }),
           ]}
@@ -115,6 +123,7 @@ export function MapGL({
           onHover={onMapHover}
         >
           <StaticMap key="static-map" mapStyle={getMapStyle(mapStyle)} />
+          {children}
         </DeckGL>
       )}
     </AutoSizer>

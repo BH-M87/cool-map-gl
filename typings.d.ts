@@ -3,6 +3,7 @@
 // import { Position } from '@deck.gl/core/utils/positions';
 // import { IconMapping } from '@deck.gl/layers/icon-layer/icon-layer';
 // import { default as Texture2D } from '@luma.gl/webgl/classes/texture-2d';
+import { RGBAColor } from '@deck.gl/aggregation-layers/utils/color-utils';
 import { PathLayerProps } from '@deck.gl/layers/path-layer/path-layer';
 
 declare module '*.css';
@@ -71,6 +72,15 @@ type IconData = {
 };
 type HeatmapData = { COORDINATES: Position; WEIGHT: number };
 type PathData = PathLayerProps<unknown> | null | undefined;
+type TripsData = {
+  path: Position[];
+  color?: RGBAColor;
+  opacity?: number;
+  widthMinPixels?: number;
+  rounded?: Boolean;
+  trailLength?: number;
+  currentTime?: number;
+};
 // declare module '@deck.gl/layers/icon-layer/icon-layer' {
 //   export interface IconLayerProps<D> extends IconLayerProps<D> {
 //     /*
