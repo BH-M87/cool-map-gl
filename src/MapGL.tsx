@@ -13,8 +13,17 @@ import getIconLayer from './layers/getIconLayer';
 import getPathLayer from './layers/getPathLayer';
 import getHeatmapLayer from './layers/getHeatmapLayer';
 import getEditableGeoJsonLayer from './layers/getEditableGeoJsonLayer';
-import { AnyObject, EditorMode, HeatmapData, IconData, PathData, TripsData } from 'typings';
+import {
+  AnyObject,
+  EditorMode,
+  GeojsonData,
+  HeatmapData,
+  IconData,
+  PathData,
+  TripsData,
+} from 'typings';
 import getTripsLayer from './layers/getTripsLayer';
+import getGeojsonLayer from './layers/getGeojsonLayer';
 
 type Props = {
   width?: number;
@@ -37,6 +46,7 @@ type Props = {
   iconData?: IconData[];
   onIconClick?: Function;
   pathData?: PathData[];
+  geojsonData: GeojsonData | GeojsonData[];
   heatmapData?: HeatmapData[];
   tripsData?: TripsData[];
   editData?: AnyObject;
@@ -73,7 +83,7 @@ export class MapGL extends PureComponent<Props, State> {
     const { defaultViewState, viewState } = props;
     this.state = { viewState: viewState || defaultViewState || systemDefaultViewState };
   }
-  
+
   UNSAFE_componentWillReceiveProps(nextProps: Props) {
     const { viewState } = nextProps;
     if (!isEqual(nextProps.viewState, this.props.viewState)) {
@@ -90,6 +100,7 @@ export class MapGL extends PureComponent<Props, State> {
       mapStyle,
       iconData,
       onIconClick,
+      geojsonData,
       pathData,
       heatmapData,
       tripsData,
@@ -129,6 +140,7 @@ export class MapGL extends PureComponent<Props, State> {
               });
             }}
             layers={[
+              ...getGeojsonLayer(geojsonData),
               ...getIconLayer(iconData, { onClick: onIconClick }),
               ...getPathLayer(pathData),
               ...getHeatmapLayer(heatmapData),

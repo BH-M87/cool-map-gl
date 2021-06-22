@@ -34,7 +34,7 @@ export default (
       ...options,
       opacity: options.opacity || 0.8,
       widthMinPixels: options.widthMinPixels || 5,
-      rounded: options.rounded || true,
+      rounded: options.rounded === false ? false : true,
       trailLength,
       currentTime: options.currentTime || 0,
       ...events,
