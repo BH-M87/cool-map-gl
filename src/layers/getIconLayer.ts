@@ -5,30 +5,30 @@ import { IconLayer } from '@deck.gl/layers';
 import { IconData } from 'typings';
 import { ICON_SIZE } from '../config/config';
 
-export default (
-  data?: IconData[],
-  events = {},
-) => {
+export default (data?: IconData[], events = {}) => {
   if (!Array.isArray(data) || data.length === 0) {
     return [];
   }
   return [
     new IconLayer({
       id: 'icon-layer',
-      data: data.filter((d) => d.url),
+      data: data.filter(
+        (d) => d.url && d.coordinates && !isNaN(d.coordinates[0]) && !isNaN(d.coordinates[1]),
+      ),
       pickable: true,
       // iconAtlas and iconMapping are required
       // getIcon: return a string
-      getIcon: (d) => ({
-        // If for the same icon identifier, getIcon returns different width or height,
-        // IconLayer will only apply the first occurrence and ignore the rest of them.
-        id: `${d.url}-${d.width || ICON_SIZE}-${d.height || ICON_SIZE}`,
-        url: d.url,
-        width: d.width || d.height || ICON_SIZE,
-        height: d.height || d.width || ICON_SIZE,
-        anchorX: d.anchorX,
-        anchorY: d.anchorY, // Default: half height.
-      }) as unknown as string,
+      getIcon: (d) =>
+        ({
+          // If for the same icon identifier, getIcon returns different width or height,
+          // IconLayer will only apply the first occurrence and ignore the rest of them.
+          id: `${d.url}-${d.width || ICON_SIZE}-${d.height || ICON_SIZE}`,
+          url: d.url,
+          width: d.width || d.height || ICON_SIZE,
+          height: d.height || d.width || ICON_SIZE,
+          anchorX: d.anchorX,
+          anchorY: d.anchorY, // Default: half height.
+        } as unknown as string),
       // @ts-ignore
       billboard: false,
       getPosition: (d) => d.coordinates,

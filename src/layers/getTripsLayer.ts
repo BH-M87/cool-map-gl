@@ -19,7 +19,7 @@ export default (
   if (data === undefined || data === null || (Array.isArray(data) && data.length === 0)) {
     return [];
   }
-  const trailLength = options.trailLength || 10;
+  const trailLength = options.trailLength || 100;
   return [
     new TripsLayer<TripsData>({
       id: 'trips-layer',
@@ -29,7 +29,7 @@ export default (
       getTimestamps: (
         d: TripsData,
         { index, data: _data }: { index: number; data: TripsData[]; target: any },
-      ) => (index / _data.length) * trailLength,
+      ) => (index / _data.length) * 100,
       getColor: (d) => d.color || options.color || [45, 103, 240],
       ...options,
       opacity: options.opacity || 0.8,

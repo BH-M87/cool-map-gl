@@ -14,6 +14,7 @@ import getPathLayer from './layers/getPathLayer';
 import getHeatmapLayer from './layers/getHeatmapLayer';
 import getEditableGeoJsonLayer from './layers/getEditableGeoJsonLayer';
 import {
+  AnyFunction,
   AnyObject,
   EditorMode,
   GeojsonData,
@@ -44,11 +45,14 @@ type Props = {
     };
   };
   iconData?: IconData[];
-  onIconClick?: Function;
+  onIconClick?: AnyFunction;
   pathData?: PathData[];
   geojsonData: GeojsonData | GeojsonData[];
   heatmapData?: HeatmapData[];
   tripsData?: TripsData[];
+  tripsAnimationSpeed: number;
+  trailLength: number;
+  loopLength: number;
   editData?: AnyObject;
   editMode?: EditorMode;
   onEdit?: ({
@@ -63,9 +67,11 @@ type Props = {
     editContext: any;
   }) => void;
   viewState?: any;
+  initialViewState?: any;
   defaultViewState?: any;
-  onViewStateChange?: Function;
-  onMapLoad?: () => any;
+  onViewStateChange?: AnyFunction;
+  onMapLoad?: AnyFunction;
+  onStaticMapLoad?: AnyFunction;
   onMapClick?: <D>(info: PickInfo<D>, pickedInfos: PickInfo<D>[], e: MouseEvent) => any;
   onMapHover?: <D>(info: PickInfo<D>, pickedInfos: PickInfo<D>[], e: MouseEvent) => any;
   getCursor: ((interactiveState: InteractiveState) => string) | undefined;
@@ -75,28 +81,63 @@ type Props = {
 
 type State = {
   viewState: any;
+  time: number;
 };
 
+const DEFAULT_LOOP_LENGTH = 100;
+const DEFAULT_TRAIL_LENGTH = 100;
+const DEFAULT_TRIPS_ANIMATION_SPEED = 1;
+
 export class MapGL extends PureComponent<Props, State> {
+  private animationId?: any;
   constructor(props: Props) {
     super(props);
     const { defaultViewState, viewState } = props;
-    this.state = { viewState: viewState || defaultViewState || systemDefaultViewState };
+    this.state = {
+      viewState: viewState || defaultViewState || systemDefaultViewState,
+      time: 0,
+    };
   }
 
   UNSAFE_componentWillReceiveProps(nextProps: Props) {
     const { viewState } = nextProps;
-    if (!isEqual(nextProps.viewState, this.props.viewState)) {
+    if (
+      viewState.longitude !== this.props.viewState.longitude ||
+      viewState.latitude !== this.props.viewState.latitude ||
+      viewState.zoom !== this.props.viewState.zoom ||
+      viewState.pitch !== this.props.viewState.pitch ||
+      viewState.bearing !== this.props.viewState.bearing
+    ) {
       this.setState({
         viewState,
       });
     }
   }
 
+  componentDidMount() {
+    this.animationId = window.requestAnimationFrame(this.animate);
+  }
+
+  componentWillUnmount() {
+    window.cancelAnimationFrame(this.animationId);
+  }
+
+  animate = () => {
+    const {
+      tripsAnimationSpeed = DEFAULT_TRIPS_ANIMATION_SPEED,
+      loopLength = DEFAULT_LOOP_LENGTH,
+      tripsData,
+    } = this.props;
+    if (tripsData) {
+      this.setState(({ time }) => ({ time: (time + tripsAnimationSpeed) % loopLength }));
+    }
+  };
+
   render() {
     const {
       width,
       height,
+      initialViewState,
       mapStyle,
       iconData,
       onIconClick,
@@ -104,19 +145,21 @@ export class MapGL extends PureComponent<Props, State> {
       pathData,
       heatmapData,
       tripsData,
+      trailLength = DEFAULT_TRAIL_LENGTH,
       editData,
       editMode,
       onEdit,
       viewState: _viewState,
       onViewStateChange,
       onMapLoad,
+      onStaticMapLoad,
       onMapClick,
       onMapHover,
       getCursor,
       layers,
       children,
     } = this.props;
-    const { viewState } = this.state;
+    const { viewState, time } = this.state;
 
     return (
       <AutoSizer width={width} height={height}>
@@ -125,6 +168,7 @@ export class MapGL extends PureComponent<Props, State> {
             width={_width}
             height={_height}
             useDevicePixels={false}
+            initialViewState={initialViewState}
             viewState={viewState}
             getCursor={getCursor}
             controller
@@ -144,7 +188,13 @@ export class MapGL extends PureComponent<Props, State> {
               ...getIconLayer(iconData, { onClick: onIconClick }),
               ...getPathLayer(pathData),
               ...getHeatmapLayer(heatmapData),
-              ...getTripsLayer(tripsData),
+              ...getTripsLayer(
+                (tripsData || []).map((data) => ({
+                  trailLength,
+                  ...data,
+                  currentTime: time,
+                })),
+              ),
               ...(Array.isArray(layers) ? layers : []),
               ...getEditableGeoJsonLayer({ data: editData, mode: editMode }, { onEdit }),
             ]}
@@ -152,7 +202,7 @@ export class MapGL extends PureComponent<Props, State> {
             onClick={onMapClick}
             onHover={onMapHover}
           >
-            <StaticMap key="static-map" mapStyle={getMapStyle(mapStyle)} />
+            <StaticMap key="static-map" mapStyle={getMapStyle(mapStyle)} onLoad={onStaticMapLoad} />
             {children}
           </DeckGL>
         )}

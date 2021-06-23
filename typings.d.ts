@@ -20,6 +20,8 @@ declare module '*.svg' {
 interface AnyObject {
   [key: string]: any;
 }
+/** 定义一个任意类型的函数声明 */
+type AnyFunction = (...args: any[]) => any;
 
 interface HTMLScriptElement {
   readyState: 'loaded' | 'complete' | undefined;
@@ -69,6 +71,7 @@ type IconData = {
   height?: number;
   anchorX?: number;
   anchorY?: number;
+  index?: number;
   // eslint-disable-next-line react/forbid-prop-types
   properties?: AnyObject;
 };
