@@ -65,6 +65,7 @@ type EditorMode =
   | 'SnappableMode';
 
 type IconData = {
+  id?: string;
   url: string;
   coordinates: Position;
   width?: number;
@@ -72,6 +73,8 @@ type IconData = {
   anchorX?: number;
   anchorY?: number;
   index?: number;
+  getIcon?: AnyFunction;
+  getPositio?: AnyFunction;
   // eslint-disable-next-line react/forbid-prop-types
   properties?: AnyObject;
 };

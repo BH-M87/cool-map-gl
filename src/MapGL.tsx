@@ -45,6 +45,7 @@ type Props = {
     };
   };
   iconData?: IconData[];
+  iconOptions?: { getIcon?: AnyFunction; getPosition: AnyFunction };
   onIconClick?: AnyFunction;
   pathData?: PathData[];
   geojsonData: GeojsonData | GeojsonData[];
@@ -140,6 +141,7 @@ export class MapGL extends PureComponent<Props, State> {
       initialViewState,
       mapStyle,
       iconData,
+      iconOptions,
       onIconClick,
       geojsonData,
       pathData,
@@ -185,7 +187,7 @@ export class MapGL extends PureComponent<Props, State> {
             }}
             layers={[
               ...getGeojsonLayer(geojsonData),
-              ...getIconLayer(iconData, { onClick: onIconClick }),
+              ...getIconLayer(iconData, { onClick: onIconClick }, iconOptions),
               ...getPathLayer(pathData),
               ...getHeatmapLayer(heatmapData),
               ...getTripsLayer(
