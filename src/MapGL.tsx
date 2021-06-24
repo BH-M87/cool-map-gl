@@ -45,7 +45,7 @@ type Props = {
     };
   };
   iconData?: IconData[];
-  iconOptions?: { getIcon?: AnyFunction; getPosition: AnyFunction };
+  iconOptions?: { getIcon?: AnyFunction; getPosition?: AnyFunction; getSize?: AnyFunction };
   onIconClick?: AnyFunction;
   pathData?: PathData[];
   geojsonData: GeojsonData | GeojsonData[];

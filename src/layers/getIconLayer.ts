@@ -8,17 +8,28 @@ import { ICON_SIZE } from '../config/config';
 export default (
   data?: IconData[],
   events = {},
-  { getIcon, getPosition }: { getIcon?: AnyFunction; getPosition?: AnyFunction } = {},
+  {
+    getIcon,
+    getPosition: _getPosition,
+    getSize,
+  }: { getIcon?: AnyFunction; getPosition?: AnyFunction; getSize?: AnyFunction } = {},
 ) => {
   if (!Array.isArray(data) || data.length === 0) {
     return [];
   }
+  const getPosition = (d: any) => {
+    if (_getPosition) {
+      return _getPosition(d);
+    }
+    return d.coordinates;
+  };
   return [
     new IconLayer({
       id: 'icon-layer',
       data: data.filter((_d) => {
         const d = getIcon ? getIcon(_d) : _d;
-        return d.url && d.coordinates && !isNaN(d.coordinates[0]) && !isNaN(d.coordinates[1]);
+        const position = getPosition(_d);
+        return d.url && position && !isNaN(position[0]) && !isNaN(position[1]);
       }),
       pickable: true,
       // iconAtlas and iconMapping are required
@@ -40,16 +51,16 @@ export default (
       },
       // @ts-ignore
       billboard: false,
-      getPosition: (d) => {
-        if (getPosition) {
-          return getPosition(d);
+      getPosition,
+      getSize: (d) => {
+        if (getSize) {
+          return getSize(d);
         }
-        return d.coordinates;
+        return d.height || d.width || ICON_SIZE;
       },
-      getSize: (d) => d.height || d.width || ICON_SIZE,
-      transitions: {
-        getPosition: 500 as TransitionTiming,
-      },
+      // transitions: {
+      //   getPosition: 500 as TransitionTiming,
+      // },
       ...events,
     }),
   ];
