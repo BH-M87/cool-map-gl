@@ -1,6 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { TransitionTiming } from '@deck.gl/core/lib/layer';
-import { Position } from '@deck.gl/core/utils/positions';
 import { IconLayer } from '@deck.gl/layers';
 import { AnyFunction, IconData } from 'typings';
 import { ICON_SIZE } from '../config/config';

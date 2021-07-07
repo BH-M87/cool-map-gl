@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import DeckGL from '@deck.gl/react'; // The deck.gl master module includes all submodules except for `@deck.gl/test-utils`.
 import { Layer } from '@deck.gl/core';
-import { isEqual } from 'lodash-es';
 import { InteractiveState, PickInfo } from '@deck.gl/core/lib/deck';
 import { StaticMap } from 'react-map-gl';
 import systemDefaultViewState from './config/systemDefaultViewState';
@@ -21,10 +20,12 @@ import {
   HeatmapData,
   IconData,
   PathData,
+  TextData,
   TripsData,
 } from 'typings';
 import getTripsLayer from './layers/getTripsLayer';
 import getGeojsonLayer from './layers/getGeojsonLayer';
+import getTextLayer from './layers/getTextLayer';
 
 type Props = {
   width?: number;
@@ -48,6 +49,7 @@ type Props = {
   iconOptions?: { getIcon?: AnyFunction; getPosition?: AnyFunction; getSize?: AnyFunction };
   onIconClick?: AnyFunction;
   pathData?: PathData[];
+  textData?: TextData[];
   geojsonData: GeojsonData | GeojsonData[];
   heatmapData?: HeatmapData[];
   tripsData?: TripsData[];
@@ -145,6 +147,7 @@ export class MapGL extends PureComponent<Props, State> {
       onIconClick,
       geojsonData,
       pathData,
+      textData,
       heatmapData,
       tripsData,
       trailLength = DEFAULT_TRAIL_LENGTH,
@@ -197,6 +200,7 @@ export class MapGL extends PureComponent<Props, State> {
                   currentTime: time,
                 })),
               ),
+              ...getTextLayer(textData),
               ...(Array.isArray(layers) ? layers : []),
               ...getEditableGeoJsonLayer({ data: editData, mode: editMode }, { onEdit }),
             ]}

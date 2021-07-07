@@ -7,6 +7,7 @@ import { RGBAColor } from '@deck.gl/aggregation-layers/utils/color-utils';
 import { DataSet } from '@deck.gl/core/lib/layer';
 import { GeoJsonLayerProps } from '@deck.gl/layers/geojson-layer/geojson-layer';
 import { LayerPath, PathLayerProps } from '@deck.gl/layers/path-layer/path-layer';
+import { TextLayerProps } from '@deck.gl/layers/text-layer/text-layer';
 
 declare module '*.css';
 declare module '*.less';
@@ -83,6 +84,7 @@ type PathData = PathLayerProps<unknown> & {
   dash?: Boolean;
   extensions?: any[];
 };
+type TextData = TextLayerProps<unknown>;
 type TripsData = {
   path: Position[];
   color?: RGBAColor;
