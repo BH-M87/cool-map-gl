@@ -80,6 +80,7 @@ type IconData = {
     // eslint-disable-next-line react/forbid-prop-types
     properties?: AnyObject;
   }[];
+  pickable?: Boolean;
   getIcon?: AnyFunction;
   getPosition?: AnyFunction;
   getSize?: AnyFunction;
