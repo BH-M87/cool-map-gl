@@ -66,18 +66,23 @@ type EditorMode =
   | 'SnappableMode';
 
 type IconData = {
-  id?: string;
-  url: string;
-  coordinates: Position;
-  width?: number;
-  height?: number;
-  anchorX?: number;
-  anchorY?: number;
-  index?: number;
+  data: {
+    id?: string;
+    url: string;
+    coordinates: Position;
+    width?: number;
+    height?: number;
+    anchorX?: number;
+    anchorY?: number;
+    index?: number;
+    getIcon?: AnyFunction;
+    getPosition?: AnyFunction;
+    // eslint-disable-next-line react/forbid-prop-types
+    properties?: AnyObject;
+  }[];
   getIcon?: AnyFunction;
-  getPositio?: AnyFunction;
-  // eslint-disable-next-line react/forbid-prop-types
-  properties?: AnyObject;
+  getPosition?: AnyFunction;
+  getSize?: AnyFunction;
 };
 type HeatmapData = { COORDINATES: Position; WEIGHT: number };
 type PathData = PathLayerProps<unknown> & {
