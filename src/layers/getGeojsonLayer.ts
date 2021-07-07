@@ -19,7 +19,13 @@ export default (data?: GeojsonData[] | GeojsonData) => {
       getLineColor: _data.getLineColor || _data.lineColor,
       getLineWidth: _data.getLineWidth || _data.lineWidth,
       pickable: _data.pickable === false ? false : true,
-      ...(_data.dash ? { extensions: [new PathStyleExtension({ dash: true })] } : {}),
+      ...(_data.dash
+        ? {
+            extensions: [new PathStyleExtension({ dash: true })],
+            getDashArray: _data.getDashArray || [6, 4],
+            dashJustified: _data.dashJustified === false ? false : true,
+          }
+        : {}),
     });
   };
   if (Array.isArray(data)) {

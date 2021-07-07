@@ -6,7 +6,7 @@
 import { RGBAColor } from '@deck.gl/aggregation-layers/utils/color-utils';
 import { DataSet } from '@deck.gl/core/lib/layer';
 import { GeoJsonLayerProps } from '@deck.gl/layers/geojson-layer/geojson-layer';
-import { PathLayerProps } from '@deck.gl/layers/path-layer/path-layer';
+import { LayerPath, PathLayerProps } from '@deck.gl/layers/path-layer/path-layer';
 
 declare module '*.css';
 declare module '*.less';
@@ -81,6 +81,7 @@ type IconData = {
 type HeatmapData = { COORDINATES: Position; WEIGHT: number };
 type PathData = PathLayerProps<unknown> & {
   dash?: Boolean;
+  extensions?: any[];
 };
 type TripsData = {
   path: Position[];
@@ -97,4 +98,7 @@ type GeojsonData = {
   lineColor?: RGBAColor;
   lineWidth?: number;
   dash?: Boolean;
+  getDashArray?: (path: LayerPath) => [number, number] | [number, number];
+  dashJustified?: Boolean;
+  extensions?: any[];
 } & GeoJsonLayerProps<GeojsonData>;
