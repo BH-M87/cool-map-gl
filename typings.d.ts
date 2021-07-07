@@ -79,7 +79,9 @@ type IconData = {
   properties?: AnyObject;
 };
 type HeatmapData = { COORDINATES: Position; WEIGHT: number };
-type PathData = PathLayerProps<unknown> | null | undefined;
+type PathData = PathLayerProps<unknown> & {
+  dash?: Boolean;
+};
 type TripsData = {
   path: Position[];
   color?: RGBAColor;
@@ -94,4 +96,5 @@ type GeojsonData = {
   fillColor?: RGBAColor;
   lineColor?: RGBAColor;
   lineWidth?: number;
+  dash?: Boolean;
 } & GeoJsonLayerProps<GeojsonData>;

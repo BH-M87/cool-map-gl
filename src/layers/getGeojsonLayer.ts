@@ -1,4 +1,6 @@
 import { GeoJsonLayer } from '@deck.gl/layers';
+// @ts-ignore
+import { PathStyleExtension } from '@deck.gl/extensions';
 import { GeojsonData } from 'typings';
 
 export default (data?: GeojsonData[] | GeojsonData) => {
@@ -8,7 +10,6 @@ export default (data?: GeojsonData[] | GeojsonData) => {
   const getLayer = (_data: GeojsonData, index = 0) => {
     return new GeoJsonLayer({
       id: `geojson-layer-${index}`,
-      data: _data.data,
       ..._data,
       filled: _data.filled === false ? false : true,
       stroked: _data.stroked === false ? false : true,
@@ -18,6 +19,7 @@ export default (data?: GeojsonData[] | GeojsonData) => {
       getLineColor: _data.getLineColor || _data.lineColor,
       getLineWidth: _data.getLineWidth || _data.lineWidth,
       pickable: _data.pickable === false ? false : true,
+      ...(_data.dash ? { extensions: [new PathStyleExtension({ dash: true })] } : {}),
     });
   };
   if (Array.isArray(data)) {

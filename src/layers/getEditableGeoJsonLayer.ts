@@ -95,7 +95,7 @@ export default (
   }
   return [
     new EditableGeoJsonLayer({
-      id: 'geojson-layer',
+      id: 'editable-geojson-layer',
       data: getData(data),
       // @ts-ignore
       mode: MODE[mode],
