@@ -28,12 +28,6 @@ export default (
     const getSize = _data.getSize || defaultGetSize;
     return new IconLayer({
       id: `icon-layer-${index}`,
-      data: (_data.data || []).filter((_d) => {
-        const d = getIcon ? getIcon(_d) : _d;
-        const position = getPosition(_d);
-        return d.url && position && !isNaN(position[0]) && !isNaN(position[1]);
-      }),
-      pickable: _data.pickable === false ? false : true,
       // iconAtlas and iconMapping are required
       // getIcon: return a string
       getIcon: (d) => {
@@ -64,6 +58,12 @@ export default (
       //   getPosition: 500 as TransitionTiming,
       // },
       ...events,
+      ..._data,
+      data: (_data.data || []).filter((_d) => {
+        const d = getIcon ? getIcon(_d) : _d;
+        const position = getPosition(_d);
+        return d.url && position && !isNaN(position[0]) && !isNaN(position[1]);
+      }),
     });
   };
   if (Array.isArray(data)) {
