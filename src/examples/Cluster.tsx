@@ -2,7 +2,7 @@
  * @Author: yongju
  * @Date: 2021-07-08 19:29:04
  * @LastEditors: yongju
- * @LastEditTime: 2021-07-09 00:01:45
+ * @LastEditTime: 2021-07-09 01:46:40
  * @Description: 
  */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
@@ -28,13 +28,16 @@ const Cluster = () => {
     {
       id:"cluster",
       clusterZooms:[14,16],
-      getClusterBackgroundImage(){
-          return createDefaultClusterBgImage(0,107,238);
+      getSize(){
+        return 50
       },
-      getImage(data:any){
+      getClusterBackgroundImage(){
+        return createDefaultClusterBgImage(0,107,238);
+      },
+      getIcon(data:any){
           return data.url;
       },
-      getCoords(data:any){
+      getPosition(data:any){
           return [data.x,data.y];
       },
       data:getData()
@@ -43,12 +46,16 @@ const Cluster = () => {
       id:"cluster1",
       clusterZooms:[14,16],
       getClusterBackgroundImage(){
-          return createDefaultClusterBgImage(40,165,135);
+        return createDefaultClusterBgImage(40,165,135);
       },
-      getImage(data:any){
+      getSize(){
+        return 50
+      },
+      
+      getIcon(data:any){
           return data.url;
       },
-      getCoords(data:any){
+      getPosition(data:any){
           return [data.x,data.y];
       },
       data:getData()
@@ -56,13 +63,16 @@ const Cluster = () => {
     {
       id:"cluster3",
       clusterZooms:[14,16],
+      etSize(){
+        return 50
+      },
       getClusterBackgroundImage(){
           return createDefaultClusterBgImage(49,181,255);
       },
-      getImage(data:any){
+      getIcon(data:any){
           return data.url;
       },
-      getCoords(data:any){
+      getPosition(data:any){
           return [data.x,data.y];
       },
       data:getData()

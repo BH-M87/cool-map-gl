@@ -2,7 +2,7 @@
  * @Author: yongju
  * @Date: 2021-07-08 19:45:34
  * @LastEditors: yongju
- * @LastEditTime: 2021-07-08 23:59:19
+ * @LastEditTime: 2021-07-09 01:43:14
  * @Description: 
  */
 
@@ -10,8 +10,8 @@
 
 export class ClusterLayer {
     id: any;
-    getImage: any;
-    getCoords: any;
+    getIcon: any;
+    getPosition: any;
     getClusterBackgroundImage: any;
     clusterZooms: any;
     maxzoom: number;
@@ -24,11 +24,15 @@ export class ClusterLayer {
     sources: any;
     layers: any;
     setViewState: any;
+    getSize: any;
+    width: undefined;
+    height: undefined;
     constructor(options:any = {},setViewState:any){
         this.id = options.id;
         this.setViewState = setViewState;
-        this.getImage = options.getImage || function(){return ""};
-        this.getCoords = options.getCoords || function(){return [0,0]};
+        this.getIcon = options.getIcon || function(){return ""};
+        this.getPosition = options.getPosition || function(){return [0,0]};
+        this.getSize = options.getSize || function(){return 45};
         this.getClusterBackgroundImage = options.getClusterBackgroundImage || function(){return [0,0]};
 
         this.clusterZooms = (options.clusterZooms || [10,14]).map((zoom:number)=>{
@@ -79,7 +83,8 @@ export class ClusterLayer {
                 }))
 
                 for(let i = 0 ; i < data.length ; i ++){
-                    let imageId = this.getImage(data[i]);
+                    let iconSize = this.getSize(data[i]);
+                    let imageId = this.getIcon(data[i]) + "&&&&" + iconSize;
                     if(imageId && images.indexOf(imageId) === -1 && !this.map.hasImage(imageId)){
                         images.push(imageId);
                     }
@@ -87,11 +92,12 @@ export class ClusterLayer {
                         type:"Feature",
                         properties:{
                             ...data[i],
-                            _imageId:imageId
+                            _imageId:imageId,
+                            _iconSize:iconSize
                         },
                         geometry:{
                             type:"Point",
-                            coordinates:this.getCoords(data[i])
+                            coordinates:this.getPosition(data[i])
                         }
                     }
                     geojsonData.features.push(feature);
@@ -100,12 +106,16 @@ export class ClusterLayer {
                     (function(i){
                         imageAll.push(new Promise((resolve,reject)=>{
                             if(!_this.map.hasImage(images[i])){
-                                _this.map.loadImage(images[i],(err:any,image:any)=>{
+                                let imgInfo = images[i].split("&&&&");
+                                let url = imgInfo[0];
+                                let width = parseFloat(imgInfo[1]);
+                                _this.map.loadImage(url,(err:any,image:any)=>{
                                     if(err){
                                         console.error("图片加载失败:" + images[i]);
                                         resolve(true);
                                         return ;
                                     };
+                                    image = resizeImage(width,width,image);
                                     if(!_this.map.hasImage(images[i])){
                                         _this.map.addImage(images[i],image);
                                     }
@@ -224,7 +234,7 @@ export class ClusterLayer {
                 source: this.sourceId,
                 filter: ['!', ['has', 'point_count']],
                 layout: {
-                    'icon-image':["get","_imageId"], 
+                    'icon-image':["get","_imageId"],
                     'icon-allow-overlap':true,
                 }
             }
@@ -269,6 +279,15 @@ export class ClusterLayer {
             return this;
         });
     }
+}
+
+export function resizeImage(width:number,height:number,image:any){
+    let canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    let ctx = canvas.getContext("2d");
+    ctx?.drawImage(image,0,0,image.width,image.height,0,0,width,height);
+    return ctx?.getImageData(0,0,width,height)
 }
 
 export function parseClusterConfig(config:any,map:any,setViewState:any){
