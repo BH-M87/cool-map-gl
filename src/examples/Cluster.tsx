@@ -2,7 +2,7 @@
  * @Author: yongju
  * @Date: 2021-07-08 19:29:04
  * @LastEditors: yongju
- * @LastEditTime: 2021-07-09 01:46:40
+ * @LastEditTime: 2021-07-09 02:32:57
  * @Description: 
  */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
@@ -81,7 +81,9 @@ const Cluster = () => {
   
   return (
     <div style={{ width: 1000, height: 500 }}>
-      <MapGL  clusterLayers={clusterLayers} />
+      <MapGL onIconClick={(a,b)=>{
+        console.log(a,b);
+      }}  clusterLayers={clusterLayers} />
     </div>
   );
 };

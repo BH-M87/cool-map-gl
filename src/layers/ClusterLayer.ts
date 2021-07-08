@@ -2,7 +2,7 @@
  * @Author: yongju
  * @Date: 2021-07-08 19:45:34
  * @LastEditors: yongju
- * @LastEditTime: 2021-07-09 01:43:14
+ * @LastEditTime: 2021-07-09 02:34:10
  * @Description: 
  */
 
@@ -27,9 +27,11 @@ export class ClusterLayer {
     getSize: any;
     width: undefined;
     height: undefined;
-    constructor(options:any = {},setViewState:any){
+    onIconClick: any;
+    constructor(options:any = {},setViewState:any,onIconClick:any){
         this.id = options.id;
         this.setViewState = setViewState;
+        this.onIconClick = onIconClick;
         this.getIcon = options.getIcon || function(){return ""};
         this.getPosition = options.getPosition || function(){return [0,0]};
         this.getSize = options.getSize || function(){return 45};
@@ -169,6 +171,16 @@ export class ClusterLayer {
         }
     }
 
+    getFeature(point:any){
+        var features = this.map.queryRenderedFeatures(point, {
+            layers: [this.id + 'unclustered-point']
+        });
+        if(features.length > 0){
+            return features[0];
+        }
+        return null
+    }
+
     run(map:any){
 
         this.map = map;
@@ -273,6 +285,10 @@ export class ClusterLayer {
             //     y:e.offsetY
             // })
             this.drill([e.offsetX,e.offsetY]);
+            let feature = this.getFeature([e.offsetX,e.offsetY]);
+            if(feature){
+                this.onIconClick(feature.properties,e);
+            }
         })
 
         return this.setData(this.data).then(()=>{
@@ -290,8 +306,8 @@ export function resizeImage(width:number,height:number,image:any){
     return ctx?.getImageData(0,0,width,height)
 }
 
-export function parseClusterConfig(config:any,map:any,setViewState:any){
-    const layer =  new ClusterLayer(config,setViewState);
+export function parseClusterConfig(config:any,map:any,setViewState:any,onIconClick:any){
+    const layer =  new ClusterLayer(config,setViewState,onIconClick);
     return layer.run(map);
 }
 

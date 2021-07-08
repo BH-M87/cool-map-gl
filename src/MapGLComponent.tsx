@@ -142,7 +142,7 @@ export const MapGLComponent = memo(
     console.log('clusterLayers', clusterLayers);
     const [map, setMap] = useState<any>(null);
     const [measureLayers] = useMeasure(measureConfig);
-    const [clusterMapStyle] = useCluster(clusterLayers, map, setViewState);
+    const [clusterMapStyle] = useCluster(clusterLayers, map, setViewState, onIconClick);
 
     const mapStyleMerged = useMemo(() => {
       const mapStyleMerged: any = getMapStyle(mapStyle);

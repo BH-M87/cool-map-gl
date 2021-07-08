@@ -2,14 +2,14 @@
  * @Author: yongju
  * @Date: 2021-07-08 21:12:56
  * @LastEditors: yongju
- * @LastEditTime: 2021-07-09 00:16:41
+ * @LastEditTime: 2021-07-09 02:34:53
  * @Description: 
  */
 
 import { parseClusterConfig } from "../layers/ClusterLayer";
 import { useEffect,useState,useRef } from "react";
 
-export function useCluster(clusterLayers:any,map:any, setViewState:any){
+export function useCluster(clusterLayers:any,map:any, setViewState:any, onIconClick:any){
     
     const destroyedRef = useRef(false);
 
@@ -25,7 +25,7 @@ export function useCluster(clusterLayers:any,map:any, setViewState:any){
             let promiseAll = []
             for(let i = 0 ; i < clusterLayers.length ; i += 1){
                 promiseAll.push(new Promise((resolve,reject)=>{
-                    parseClusterConfig(clusterLayers[i],map,setViewState).then((layer)=>{
+                    parseClusterConfig(clusterLayers[i],map,setViewState,onIconClick).then((layer)=>{
                         resolve(layer);
                     });
                 }));
