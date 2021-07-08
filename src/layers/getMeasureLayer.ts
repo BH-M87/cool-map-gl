@@ -2,7 +2,7 @@
  * @Author: yongju
  * @Date: 2021-07-08 11:12:23
  * @LastEditors: yongju
- * @LastEditTime: 2021-07-08 15:47:01
+ * @LastEditTime: 2021-07-08 18:24:11
  * @Description:
  */
 // @ts-nocheck
@@ -19,6 +19,7 @@ export class EditableGeoJsonLayer extends A {
   getModeProps(props) {
     const p = super.getModeProps(props);
     return {
+      context:this.context,
       active: props.active,
       ...p,
     };
@@ -26,6 +27,10 @@ export class EditableGeoJsonLayer extends A {
 
   getModeType() {
     return this.props.modeType;
+  }
+
+  onLayerDblClick(event){
+    console.log(123);
   }
 
   clear() {
@@ -84,9 +89,9 @@ export function createMeasureDistanceLayer(active, geojson, featureIndexes, onEd
       formatTooltip(distance) {
         const number = parseFloat(distance);
         if (number > 1) {
-          return ''.concat(parseFloat(number.toFixed(2)), '').concat('千米');
+          return ' '.concat(parseFloat(number.toFixed(2)), '').concat('千米 ');
         }
-        return ''.concat(parseFloat((1000 * number).toFixed(2)), ' ').concat('米');
+        return ' '.concat(parseFloat((1000 * number).toFixed(2)), ' ').concat('米 ');
       },
     },
     _subLayerProps: {
@@ -186,7 +191,7 @@ export function createMeasureAreaLayer(active, geojson, featureIndexes, onEdit) 
         },
       },
       formatTooltip(area) {
-        return `${parseFloat(area).toFixed(2)} 平方米`;
+        return ` ${parseFloat(area).toFixed(2)} 平方米 `;
       },
     },
     _subLayerProps: {
