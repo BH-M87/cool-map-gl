@@ -2,7 +2,7 @@
  * @Author: yongju
  * @Date: 2021-07-08 19:45:34
  * @LastEditors: yongju
- * @LastEditTime: 2021-07-09 02:34:10
+ * @LastEditTime: 2021-07-09 02:51:09
  * @Description: 
  */
 
@@ -287,7 +287,10 @@ export class ClusterLayer {
             this.drill([e.offsetX,e.offsetY]);
             let feature = this.getFeature([e.offsetX,e.offsetY]);
             if(feature){
-                this.onIconClick(feature.properties,e);
+                this.onIconClick({
+                    object:feature.properties,
+                    event:e
+                });
             }
         })
 
