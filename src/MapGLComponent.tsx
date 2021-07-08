@@ -137,7 +137,8 @@ export const MapGLComponent = memo(
   }: Props) => {
     const [ map,setMap ] = useState<any>(null);
     const [ measureLayers ] = useMeasure(measureConfig);
-    const [ clusterMapStyle ] = useCluster(clusterLayers || [], map, setViewState); 
+    const [ clusterMapStyle ] = useCluster(clusterLayers, map, setViewState); 
+
     const mapStyleMerged = useMemo(() =>{
       const mapStyleMerged:any = getMapStyle(mapStyle) ;
 

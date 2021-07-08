@@ -2,7 +2,7 @@
  * @Author: yongju
  * @Date: 2021-07-08 21:12:56
  * @LastEditors: yongju
- * @LastEditTime: 2021-07-08 23:26:46
+ * @LastEditTime: 2021-07-09 00:14:44
  * @Description: 
  */
 
@@ -19,7 +19,7 @@ export function useCluster(clusterLayers:any,map:any, setViewState:any){
     });
     
     useEffect(() => {
-        if(map){
+        if(map && clusterLayers){
             window.map = map;
             let layers:any = [];
             let sources = {};
@@ -50,7 +50,7 @@ export function useCluster(clusterLayers:any,map:any, setViewState:any){
         return ()=>{
             destroyedRef.current = true;
         }
-    }, [clusterLayers,map,setViewState]);
+    }, [clusterLayers,!!map,setViewState]);
     
     return [style];
 }
