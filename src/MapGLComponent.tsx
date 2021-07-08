@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState ,useMemo} from 'react';
 import PropTypes from 'prop-types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import DeckGL from '@deck.gl/react'; // The deck.gl master module includes all submodules except for `@deck.gl/test-utils`.
@@ -27,6 +27,9 @@ import getTripsLayer from './layers/getTripsLayer';
 import getGeojsonLayer from './layers/getGeojsonLayer';
 import getTextLayer from './layers/getTextLayer';
 import { useMeasure } from './hooks/useMeasure';
+import { useCluster } from './hooks/useCluster'
+
+import { fromJS } from 'immutable';
 
 export type BasicProps = {
   width?: number;
@@ -86,6 +89,7 @@ export type BasicProps = {
     areaMeasure: boolean;
     mode: number;
   };
+  clusterLayers:any[]
 };
 
 type ExtraProps = {
@@ -129,8 +133,27 @@ export const MapGLComponent = memo(
     setViewState,
     time,
     measureConfig,
+    clusterLayers
   }: Props) => {
-    const [measureLayers] = useMeasure(measureConfig);
+    const [ map,setMap ] = useState<any>(null);
+    const [ measureLayers ] = useMeasure(measureConfig);
+    const [ clusterMapStyle ] = useCluster(clusterLayers || [], map, setViewState); 
+    const mapStyleMerged = useMemo(() =>{
+      const mapStyleMerged:any = getMapStyle(mapStyle) ;
+
+      if(mapStyleMerged && clusterMapStyle){
+        mapStyleMerged.layers = [
+          ...(mapStyleMerged.layers || []),
+          ...(clusterMapStyle.layers || [])
+        ];
+        mapStyleMerged.sources = {
+          ...(mapStyleMerged.sources || {}),
+          ...(clusterMapStyle.sources || {}),
+        }
+      }
+      return fromJS(mapStyleMerged);
+    }, [mapStyle,clusterMapStyle]);
+
     return (
       <AutoSizer width={width} height={height}>
         {({ width: _width, height: _height }) => (
@@ -172,7 +195,12 @@ export const MapGLComponent = memo(
             onClick={onMapClick}
             onHover={onMapHover}
           >
-            <StaticMap key="static-map" mapStyle={getMapStyle(mapStyle)} onLoad={onStaticMapLoad} />
+            <StaticMap key="static-map" mapStyle={mapStyleMerged} onLoad={(event:any)=>{
+              if(onStaticMapLoad){
+                onStaticMapLoad(event);
+              }
+              setMap(event.target);
+            }} />
             {children}
           </DeckGL>
         )}

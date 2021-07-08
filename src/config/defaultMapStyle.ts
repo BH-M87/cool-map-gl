@@ -1,5 +1,6 @@
 export default {
   version: 8,
+  glyphs: "./fonts/{fontstack}/{range}.pbf",
   sources: {
     rasterTile: {
       type: 'raster',
