@@ -139,7 +139,6 @@ export const MapGLComponent = memo(
     measureConfig,
     clusterLayers,
   }: Props) => {
-    console.log('clusterLayers', clusterLayers);
     const [map, setMap] = useState<any>(null);
     const [measureLayers] = useMeasure(measureConfig);
     const [clusterMapStyle] = useCluster(clusterLayers, map, setViewState, onIconClick);
