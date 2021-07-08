@@ -34,7 +34,7 @@ export class EditableGeoJsonLayer extends A {
   }
 
   onLayerDblClick(event){
-    console.log(123);
+    console.log(event);
   }
 
   clear() {
