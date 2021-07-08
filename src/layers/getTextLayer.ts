@@ -7,10 +7,14 @@ export default (data?: TextData[] | TextData) => {
     return [];
   }
   const getLayer = (_data: TextData, index = 0) => {
-    const characterSet = ((_data.data || []) as any[]).reduce((item) => {
+    const set = new Set<string>();
+    ((_data.data || []) as any[]).forEach((item) => {
       const text = _data.getText ? _data.getText(item) : item;
-      return item.concat(text.split(''));
+      text.split('').forEach((s: string) => {
+        set.add(s);
+      });
     }, []);
+    const characterSet = [...set];
     return new TextLayer({
       id: `text-layer-${index}`,
       ..._data,
