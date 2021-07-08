@@ -4,7 +4,7 @@
  * @Author: yongju
  * @Date: 2021-07-08 12:20:25
  * @LastEditors: yongju
- * @LastEditTime: 2021-07-08 12:29:57
+ * @LastEditTime: 2021-07-08 18:38:10
  * @Description:
  */
 // @ts-nocheck
@@ -16,7 +16,7 @@ import {
   ModeProps,
   FeatureCollection,
   GuideFeatureCollection,
-  ImmutableFeatureCollection
+  ImmutableFeatureCollection,
 } from 'nebula.gl';
 
 const {
@@ -37,7 +37,7 @@ export class MeasureDistanceMode extends DrawLineStringMode {
   }
 
   handleClick(event, props) {
-    const { modeConfig, data, onEdit, active } = props;
+    const { modeConfig, data, onEdit, active, context } = props;
 
     if (!active) return;
 
@@ -46,6 +46,8 @@ export class MeasureDistanceMode extends DrawLineStringMode {
       this.resetClickSequence();
       this._currentTooltips = [];
       this._currentDistance = 0;
+    } else if (context) {
+      context.deck.viewManager.controllers['default-view'].doubleClickZoom = false;
     }
 
     const { picks } = event;
@@ -114,6 +116,9 @@ export class MeasureDistanceMode extends DrawLineStringMode {
       Array.isArray(clickedEditHandle.properties.positionIndexes) &&
       clickedEditHandle.properties.positionIndexes[0] === clickSequence.length - 1
     ) {
+      if (context) {
+        context.deck.viewManager.controllers['default-view'].doubleClickZoom = true;
+      }
       // They clicked the last point (or double-clicked), so add the LineString
       this._isMeasuringSessionFinished = true;
       const lineStringToAdd = this._toFeatures(clickSequence);
@@ -304,6 +309,26 @@ export class MeasureDistanceMode extends DrawLineStringMode {
   }
 
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+    const { active, context } = props;
+
+    const clickSequence = this.getClickSequence();
+    if (!active) {
+      if (!this._isMeasuringSessionFinished) {
+        if (context) {
+          context.deck.viewManager.controllers['default-view'].doubleClickZoom = true;
+        }
+      }
+      if (clickSequence.length > 0) {
+        this.resetClickSequence();
+        this._currentTooltips = [];
+        this._isMeasuringSessionFinished = true;
+      }
+      return {
+        type: 'FeatureCollection',
+        features: [],
+      };
+    }
+
     const handles = [];
 
     const { data, lastPointerMoveEvent } = props;
@@ -311,8 +336,6 @@ export class MeasureDistanceMode extends DrawLineStringMode {
     const { features } = data;
     const picks = lastPointerMoveEvent && lastPointerMoveEvent.picks;
     const mapCoords = lastPointerMoveEvent && lastPointerMoveEvent.mapCoords;
-
-    const clickSequence = this.getClickSequence();
 
     const lastCoords = lastPointerMoveEvent ? [mapCoords] : [];
 

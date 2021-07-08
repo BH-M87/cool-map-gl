@@ -5,7 +5,7 @@
  * @Author: yongju
  * @Date: 2021-07-08 12:24:48
  * @LastEditors: yongju
- * @LastEditTime: 2021-07-08 12:30:09
+ * @LastEditTime: 2021-07-08 18:40:40
  * @Description:
  */
 // @ts-nocheck
@@ -33,15 +33,18 @@ const {
 export class MeasureAreaMode extends DrawPolygonMode {
   constructor() {
     super();
+    this._isMeasuringSessionFinished = true;
   }
 
   handleClick(event, props) {
-    const { data, onEdit, active } = props;
+    const { data, onEdit, active, context } = props;
     if (!active) return;
 
     if (this._isMeasuringSessionFinished) {
       this._isMeasuringSessionFinished = false;
       this.resetClickSequence();
+    } else if (context) {
+      context.deck.viewManager.controllers['default-view'].doubleClickZoom = false;
     }
 
     const { picks } = event;
@@ -61,6 +64,9 @@ export class MeasureAreaMode extends DrawPolygonMode {
       Array.isArray(clickedEditHandle.properties.positionIndexes) &&
       clickedEditHandle.properties.positionIndexes[0] === clickSequence.length - 1
     ) {
+      if (context) {
+        context.deck.viewManager.controllers['default-view'].doubleClickZoom = true;
+      }
       // They clicked the last point (or double-clicked), so add the LineString
       this._isMeasuringSessionFinished = true;
       const polygonToAdd = this._toFeatures(clickSequence);
@@ -215,6 +221,26 @@ export class MeasureAreaMode extends DrawPolygonMode {
   }
 
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+    const { active, context } = props;
+
+    const clickSequence = this.getClickSequence();
+    if (!active) {
+      if (!this._isMeasuringSessionFinished) {
+        debugger;
+        if (context) {
+          context.deck.viewManager.controllers['default-view'].doubleClickZoom = true;
+        }
+      }
+      if (clickSequence.length > 0) {
+        this.resetClickSequence();
+        this._isMeasuringSessionFinished = true;
+      }
+
+      return {
+        type: 'FeatureCollection',
+        features: [],
+      };
+    }
     const handles = [];
 
     const { data, lastPointerMoveEvent } = props;
@@ -222,8 +248,6 @@ export class MeasureAreaMode extends DrawPolygonMode {
     const { features } = data;
     const picks = lastPointerMoveEvent && lastPointerMoveEvent.picks;
     const mapCoords = lastPointerMoveEvent && lastPointerMoveEvent.mapCoords;
-
-    const clickSequence = this.getClickSequence();
 
     const tentativeFeature = this.createTentativeFeature(props);
     if (tentativeFeature) {
