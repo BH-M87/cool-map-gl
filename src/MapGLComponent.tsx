@@ -80,6 +80,8 @@ export type BasicProps = {
   onMapHover?: <D>(info: PickInfo<D>, pickedInfos: PickInfo<D>[], e: MouseEvent) => any;
   getCursor: ((interactiveState: InteractiveState) => string) | undefined;
   layers?: Layer<any>;
+  topLayers?: Layer<any>;
+  bottomLayers?: Layer<any>;
   children: JSX.Element | JSX.Element[];
   measureConfig: {
     distanceMeasure: boolean;
@@ -123,7 +125,9 @@ export const MapGLComponent = memo(
     onMapClick,
     onMapHover,
     getCursor,
+    topLayers,
     layers,
+    bottomLayers,
     children,
     viewState,
     setViewState,
@@ -152,6 +156,7 @@ export const MapGLComponent = memo(
               setViewState(vs);
             }}
             layers={[
+              ...(Array.isArray(bottomLayers) ? bottomLayers : []),
               ...getGeojsonLayer(geojsonData),
               ...getIconLayer(iconData, { onClick: onIconClick }, iconOptions),
               ...getPathLayer(pathData),
@@ -167,6 +172,7 @@ export const MapGLComponent = memo(
               ...(Array.isArray(layers) ? layers : []),
               ...getEditableGeoJsonLayer({ data: editData, mode: editMode }, { onEdit }),
               ...measureLayers,
+              ...(Array.isArray(topLayers) ? topLayers : []),
             ]}
             onLoad={onMapLoad}
             onClick={onMapClick}
