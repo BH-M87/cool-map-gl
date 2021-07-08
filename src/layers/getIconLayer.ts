@@ -11,10 +11,10 @@ export default (
     getSize: defaultGetSize,
   }: { getIcon?: AnyFunction; getPosition?: AnyFunction; getSize?: AnyFunction } = {},
 ) => {
-  if (!Array.isArray(data) || data.length === 0) {
+  if (data === undefined || data === null) {
     return [];
   }
-  const getPosition = (d: any) => {
+  const getPosition = (d: any = {}) => {
     if (d.getPosition) {
       return d.getPosition(d);
     }
@@ -28,6 +28,15 @@ export default (
     const getSize = _data.getSize || defaultGetSize;
     return new IconLayer({
       id: `icon-layer-${index}`,
+      // @ts-ignore
+      billboard: false,
+      ...events,
+      ..._data,
+      data: (_data.data || []).filter((_d) => {
+        const d = getIcon ? getIcon(_d) : _d;
+        const position = getPosition(_d);
+        return d.url && position && !isNaN(position[0]) && !isNaN(position[1]);
+      }),
       // iconAtlas and iconMapping are required
       // getIcon: return a string
       getIcon: (d) => {
@@ -45,8 +54,6 @@ export default (
           anchorY: d.anchorY, // Default: half height.
         } as unknown as string;
       },
-      // @ts-ignore
-      billboard: false,
       getPosition,
       getSize: (d) => {
         if (getSize) {
@@ -57,13 +64,6 @@ export default (
       // transitions: {
       //   getPosition: 500 as TransitionTiming,
       // },
-      ...events,
-      ..._data,
-      data: (_data.data || []).filter((_d) => {
-        const d = getIcon ? getIcon(_d) : _d;
-        const position = getPosition(_d);
-        return d.url && position && !isNaN(position[0]) && !isNaN(position[1]);
-      }),
     });
   };
   if (Array.isArray(data)) {

@@ -13,7 +13,13 @@ import nearestPointOnLine from '@turf/nearest-point-on-line';
 import { point, lineString as toLineString } from '@turf/helpers';
 import turfArea from '@turf/area';
 import turfCentroid from '@turf/centroid';
-import { utils, ImmutableFeatureCollection, DrawPolygonMode } from '@nebula.gl/edit-modes';
+import {
+  DrawPolygonMode,
+  ModeProps,
+  FeatureCollection,
+  GuideFeatureCollection,
+  ImmutableFeatureCollection,
+} from 'nebula.gl';
 
 const {
   recursivelyTraverseNestedArrays,
@@ -23,7 +29,7 @@ const {
   getPickedEditHandle,
   getPickedExistingEditHandle,
   getPickedIntermediateEditHandle,
-} = utils;
+} = require('@nebula.gl/edit-modes/dist/utils');
 export class MeasureAreaMode extends DrawPolygonMode {
   constructor() {
     super();
@@ -37,8 +43,8 @@ export class MeasureAreaMode extends DrawPolygonMode {
     if (this._isMeasuringSessionFinished) {
       this._isMeasuringSessionFinished = false;
       this.resetClickSequence();
-    }else if(context){
-      context.deck.viewManager.controllers["default-view"].doubleClickZoom = false;
+    } else if (context) {
+      context.deck.viewManager.controllers['default-view'].doubleClickZoom = false;
     }
 
     const { picks } = event;
@@ -58,9 +64,8 @@ export class MeasureAreaMode extends DrawPolygonMode {
       Array.isArray(clickedEditHandle.properties.positionIndexes) &&
       clickedEditHandle.properties.positionIndexes[0] === clickSequence.length - 1
     ) {
-
-      if(context){
-        context.deck.viewManager.controllers["default-view"].doubleClickZoom = true;
+      if (context) {
+        context.deck.viewManager.controllers['default-view'].doubleClickZoom = true;
       }
       // They clicked the last point (or double-clicked), so add the LineString
       this._isMeasuringSessionFinished = true;
@@ -215,27 +220,27 @@ export class MeasureAreaMode extends DrawPolygonMode {
     return tootips;
   }
 
-  getGuides(props) {
-    const { active ,context} = props; 
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+    const { active, context } = props;
 
     const clickSequence = this.getClickSequence();
     if (!active) {
-      if(!this._isMeasuringSessionFinished){
+      if (!this._isMeasuringSessionFinished) {
         debugger;
-        if(context){
-          context.deck.viewManager.controllers["default-view"].doubleClickZoom = true;
+        if (context) {
+          context.deck.viewManager.controllers['default-view'].doubleClickZoom = true;
         }
       }
-      if(clickSequence.length > 0){
+      if (clickSequence.length > 0) {
         this.resetClickSequence();
         this._isMeasuringSessionFinished = true;
       }
-      
+
       return {
         type: 'FeatureCollection',
         features: [],
-      }
-    };
+      };
+    }
     const handles = [];
 
     const { data, lastPointerMoveEvent } = props;
@@ -243,7 +248,6 @@ export class MeasureAreaMode extends DrawPolygonMode {
     const { features } = data;
     const picks = lastPointerMoveEvent && lastPointerMoveEvent.picks;
     const mapCoords = lastPointerMoveEvent && lastPointerMoveEvent.mapCoords;
-
 
     const tentativeFeature = this.createTentativeFeature(props);
     if (tentativeFeature) {

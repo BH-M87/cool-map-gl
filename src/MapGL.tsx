@@ -1,31 +1,5 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import DeckGL from '@deck.gl/react'; // The deck.gl master module includes all submodules except for `@deck.gl/test-utils`.
-import { Layer } from '@deck.gl/core';
-import { InteractiveState, PickInfo } from '@deck.gl/core/lib/deck';
-import { StaticMap } from 'react-map-gl';
 import systemDefaultViewState from './config/systemDefaultViewState';
-import getMapStyle from './libs/getMapStyle';
-import AutoSizer from './utils/AutoSizer';
-import getIconLayer from './layers/getIconLayer';
-import getPathLayer from './layers/getPathLayer';
-import getHeatmapLayer from './layers/getHeatmapLayer';
-import getEditableGeoJsonLayer from './layers/getEditableGeoJsonLayer';
-import {
-  AnyFunction,
-  AnyObject,
-  EditorMode,
-  GeojsonData,
-  HeatmapData,
-  IconData,
-  PathData,
-  TextData,
-  TripsData,
-} from 'typings';
-import getTripsLayer from './layers/getTripsLayer';
-import getGeojsonLayer from './layers/getGeojsonLayer';
-import getTextLayer from './layers/getTextLayer';
 import { BasicProps, MapGLComponent } from './MapGLComponent';
 
 type State = {

@@ -11,7 +11,13 @@
 import nearestPointOnLine from '@turf/nearest-point-on-line';
 import { point, lineString as toLineString } from '@turf/helpers';
 import turfDistance from '@turf/distance';
-import { utils, ImmutableFeatureCollection, DrawLineStringMode } from '@nebula.gl/edit-modes';
+import {
+  DrawLineStringMode,
+  ModeProps,
+  FeatureCollection,
+  GuideFeatureCollection,
+  ImmutableFeatureCollection,
+} from 'nebula.gl';
 
 const {
   recursivelyTraverseNestedArrays,
@@ -21,7 +27,7 @@ const {
   getPickedEditHandle,
   getPickedExistingEditHandle,
   getPickedIntermediateEditHandle,
-} = utils;
+} = require('@nebula.gl/edit-modes/dist/utils');
 
 export class MeasureDistanceMode extends DrawLineStringMode {
   constructor() {
@@ -31,7 +37,6 @@ export class MeasureDistanceMode extends DrawLineStringMode {
   }
 
   handleClick(event, props) {
-
     const { modeConfig, data, onEdit, active, context } = props;
 
     if (!active) return;
@@ -41,8 +46,8 @@ export class MeasureDistanceMode extends DrawLineStringMode {
       this.resetClickSequence();
       this._currentTooltips = [];
       this._currentDistance = 0;
-    }else if(context){
-      context.deck.viewManager.controllers["default-view"].doubleClickZoom = false;
+    } else if (context) {
+      context.deck.viewManager.controllers['default-view'].doubleClickZoom = false;
     }
 
     const { picks } = event;
@@ -111,9 +116,8 @@ export class MeasureDistanceMode extends DrawLineStringMode {
       Array.isArray(clickedEditHandle.properties.positionIndexes) &&
       clickedEditHandle.properties.positionIndexes[0] === clickSequence.length - 1
     ) {
-      
-      if(context){
-        context.deck.viewManager.controllers["default-view"].doubleClickZoom = true;
+      if (context) {
+        context.deck.viewManager.controllers['default-view'].doubleClickZoom = true;
       }
       // They clicked the last point (or double-clicked), so add the LineString
       this._isMeasuringSessionFinished = true;
@@ -304,18 +308,17 @@ export class MeasureDistanceMode extends DrawLineStringMode {
     return tootips;
   }
 
-  getGuides(props) {
-
-    const { active , context} = props;
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+    const { active, context } = props;
 
     const clickSequence = this.getClickSequence();
     if (!active) {
-      if(!this._isMeasuringSessionFinished){
-        if(context){
-          context.deck.viewManager.controllers["default-view"].doubleClickZoom = true;
+      if (!this._isMeasuringSessionFinished) {
+        if (context) {
+          context.deck.viewManager.controllers['default-view'].doubleClickZoom = true;
         }
       }
-      if(clickSequence.length > 0){
+      if (clickSequence.length > 0) {
         this.resetClickSequence();
         this._currentTooltips = [];
         this._isMeasuringSessionFinished = true;
@@ -323,8 +326,8 @@ export class MeasureDistanceMode extends DrawLineStringMode {
       return {
         type: 'FeatureCollection',
         features: [],
-      }
-    };
+      };
+    }
 
     const handles = [];
 
@@ -333,7 +336,6 @@ export class MeasureDistanceMode extends DrawLineStringMode {
     const { features } = data;
     const picks = lastPointerMoveEvent && lastPointerMoveEvent.picks;
     const mapCoords = lastPointerMoveEvent && lastPointerMoveEvent.mapCoords;
-
 
     const lastCoords = lastPointerMoveEvent ? [mapCoords] : [];
 
@@ -541,7 +543,7 @@ export class MeasureDistanceMode extends DrawLineStringMode {
       });
     }
   }
-  
+
   handleStopDragging(event, props) {
     const { modeConfig, active } = props;
     if (!active) return;
