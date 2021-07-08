@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import MapGL from '..';
+import { MapGL } from '..';
 import policeCarImg from '../assets/police_car.png';
 
 const STEP_SIZE = 0.0005 * 2;

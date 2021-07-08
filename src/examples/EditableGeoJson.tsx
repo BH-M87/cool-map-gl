@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MapGL from '..';
+import { MapGL } from '..';
 
 const EditableGeoJson = () => {
   const [editData, setEditData] = useState(null);

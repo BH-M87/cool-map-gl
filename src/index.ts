@@ -1,4 +1,4 @@
-export { default, MapGL } from './MapGL';
+export { MapGL } from './MapGL';
 
 export {
   EditableGeoJsonLayer,

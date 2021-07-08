@@ -38,7 +38,7 @@ const DEFAULT_TRIPS_ANIMATION_SPEED = 1;
 
 export class MapGL extends PureComponent<BasicProps, State> {
   private animationId?: any;
-  constructor(props: Props) {
+  constructor(props: BasicProps) {
     super(props);
     const { defaultViewState, viewState } = props;
     this.state = {
@@ -47,14 +47,15 @@ export class MapGL extends PureComponent<BasicProps, State> {
     };
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
+  UNSAFE_componentWillReceiveProps(nextProps: BasicProps) {
     const { viewState } = nextProps;
     if (
-      viewState.longitude !== this.props.viewState.longitude ||
-      viewState.latitude !== this.props.viewState.latitude ||
-      viewState.zoom !== this.props.viewState.zoom ||
-      viewState.pitch !== this.props.viewState.pitch ||
-      viewState.bearing !== this.props.viewState.bearing
+      viewState &&
+      (viewState.longitude !== this.props.viewState.longitude ||
+        viewState.latitude !== this.props.viewState.latitude ||
+        viewState.zoom !== this.props.viewState.zoom ||
+        viewState.pitch !== this.props.viewState.pitch ||
+        viewState.bearing !== this.props.viewState.bearing)
     ) {
       this.setViewState(viewState);
     }
@@ -87,7 +88,14 @@ export class MapGL extends PureComponent<BasicProps, State> {
 
   render() {
     const { viewState, time } = this.state;
-    return <MapGLComponent {...this.props} viewState={viewState} time={time} setViewState={this.setViewState} />;
+    return (
+      <MapGLComponent
+        {...this.props}
+        viewState={viewState}
+        time={time}
+        setViewState={this.setViewState}
+      />
+    );
   }
 }
 

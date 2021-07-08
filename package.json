@@ -44,6 +44,7 @@
     "@nebula.gl/layers": "^0.22.3",
     "@nebula.gl/overlays": "^0.22.3",
     "@turf/difference": "6.0.1",
+    "@turf/nearest-point-on-line": "^6.4.0",
     "d3-interpolate": "^3.0.1",
     "immutable": "^4.0.0-rc.12",
     "lodash-es": "^4.17.21",

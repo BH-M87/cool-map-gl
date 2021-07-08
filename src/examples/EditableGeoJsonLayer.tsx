@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MapGL, { EditableGeoJsonLayer, DrawPolygonMode } from '..';
+import { MapGL, EditableGeoJsonLayer, DrawPolygonMode } from '..';
 
 const selectedFeatureIndexes: any[] = [];
 

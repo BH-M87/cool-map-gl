@@ -1,5 +1,5 @@
 import React from 'react';
-import MapGL from '..';
+import { MapGL } from '..';
 
 const MapGLExample = () => {
   return (

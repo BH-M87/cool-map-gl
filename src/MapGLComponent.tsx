@@ -82,8 +82,8 @@ export type BasicProps = {
   layers?: Layer<any>;
   children: JSX.Element | JSX.Element[];
   measureConfig: {
-    distanceMeasure: Boolean;
-    areaMeasure: Boolean;
+    distanceMeasure: boolean;
+    areaMeasure: boolean;
     mode: number;
   };
 };
