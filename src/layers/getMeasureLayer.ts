@@ -2,7 +2,7 @@
  * @Author: yongju
  * @Date: 2021-07-08 11:12:23
  * @LastEditors: yongju
- * @LastEditTime: 2021-07-08 18:24:11
+ * @LastEditTime: 2021-07-09 03:12:55
  * @Description:
  */
 // @ts-nocheck
@@ -23,6 +23,10 @@ export class EditableGeoJsonLayer extends A {
       active: props.active,
       ...p,
     };
+  }
+
+  getScreenCoords(event){
+    return [event.offsetX,event.offsetY];
   }
 
   getModeType() {
