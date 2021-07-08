@@ -217,7 +217,7 @@ export class ClusterLayer {
                     'text-field':[
                         "case",
                         ["has","point_count_abbreviated"],["get","point_count_abbreviated"],
-                        "0"
+                        "1"
                     ],
                     //'text-font': [''],
                     'text-size': 16,
@@ -230,7 +230,7 @@ export class ClusterLayer {
             {
                 id: this.id + 'unclustered-point',
                 type: 'symbol',
-                minzoom:this.maxzoom,
+                minzoom:this.maxzoom + 1,
                 source: this.sourceId,
                 filter: ['!', ['has', 'point_count']],
                 layout: {

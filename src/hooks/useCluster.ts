@@ -20,7 +20,6 @@ export function useCluster(clusterLayers:any,map:any, setViewState:any){
     
     useEffect(() => {
         if(map && clusterLayers){
-            window.map = map;
             let layers:any = [];
             let sources = {};
             let promiseAll = []
