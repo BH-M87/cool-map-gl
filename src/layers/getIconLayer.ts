@@ -15,7 +15,6 @@ export default (
     return [];
   }
   const getPosition = (d: any = {}) => {
-    console.log('ddddddd', d);
     if (d.getPosition) {
       return d.getPosition(d);
     }
