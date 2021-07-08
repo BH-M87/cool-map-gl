@@ -11,7 +11,7 @@ export default (
     getSize: defaultGetSize,
   }: { getIcon?: AnyFunction; getPosition?: AnyFunction; getSize?: AnyFunction } = {},
 ) => {
-  if (!Array.isArray(data) || data.length === 0) {
+  if (data === undefined || data === null) {
     return [];
   }
   const getPosition = (d: any) => {
