@@ -10,9 +10,10 @@ export default (data?: TextData[] | TextData) => {
     const set = new Set<string>();
     ((_data.data || []) as any[]).forEach((item) => {
       const text = _data.getText ? _data.getText(item) : item;
-      text.split('').forEach((s: string) => {
-        set.add(s);
-      });
+      for (let index = 0; index < text.length; index++) {
+        set.add(text.charAt(index));
+      }
+      text.split('').forEach((s: string) => {});
     }, []);
     const characterSet = [...set];
     return new TextLayer({
