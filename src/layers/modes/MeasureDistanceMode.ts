@@ -11,7 +11,13 @@
 import nearestPointOnLine from '@turf/nearest-point-on-line';
 import { point, lineString as toLineString } from '@turf/helpers';
 import turfDistance from '@turf/distance';
-import { utils, ImmutableFeatureCollection, DrawLineStringMode } from '@nebula.gl/edit-modes';
+import {
+  DrawLineStringMode,
+  ModeProps,
+  FeatureCollection,
+  GuideFeatureCollection,
+  ImmutableFeatureCollection
+} from 'nebula.gl';
 
 const {
   recursivelyTraverseNestedArrays,
@@ -21,7 +27,7 @@ const {
   getPickedEditHandle,
   getPickedExistingEditHandle,
   getPickedIntermediateEditHandle,
-} = utils;
+} = require('@nebula.gl/edit-modes/dist/utils');
 
 export class MeasureDistanceMode extends DrawLineStringMode {
   constructor() {
@@ -297,7 +303,7 @@ export class MeasureDistanceMode extends DrawLineStringMode {
     return tootips;
   }
 
-  getGuides(props) {
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const handles = [];
 
     const { data, lastPointerMoveEvent } = props;

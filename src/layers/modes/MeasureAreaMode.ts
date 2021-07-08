@@ -13,7 +13,13 @@ import nearestPointOnLine from '@turf/nearest-point-on-line';
 import { point, lineString as toLineString } from '@turf/helpers';
 import turfArea from '@turf/area';
 import turfCentroid from '@turf/centroid';
-import { utils, ImmutableFeatureCollection, DrawPolygonMode } from '@nebula.gl/edit-modes';
+import {
+  DrawPolygonMode,
+  ModeProps,
+  FeatureCollection,
+  GuideFeatureCollection,
+  ImmutableFeatureCollection,
+} from 'nebula.gl';
 
 const {
   recursivelyTraverseNestedArrays,
@@ -23,7 +29,7 @@ const {
   getPickedEditHandle,
   getPickedExistingEditHandle,
   getPickedIntermediateEditHandle,
-} = utils;
+} = require('@nebula.gl/edit-modes/dist/utils');
 export class MeasureAreaMode extends DrawPolygonMode {
   constructor() {
     super();
@@ -208,7 +214,7 @@ export class MeasureAreaMode extends DrawPolygonMode {
     return tootips;
   }
 
-  getGuides(props) {
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const handles = [];
 
     const { data, lastPointerMoveEvent } = props;
