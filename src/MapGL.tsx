@@ -26,61 +26,7 @@ import {
 import getTripsLayer from './layers/getTripsLayer';
 import getGeojsonLayer from './layers/getGeojsonLayer';
 import getTextLayer from './layers/getTextLayer';
-
-type Props = {
-  width?: number;
-  height?: number;
-  mapStyle?: {
-    version?: number;
-    sources?: {
-      rasterTile: {
-        type: string;
-        tiles: string[];
-        tileSize: number;
-      };
-    };
-    layers?: {
-      id: string;
-      type: string;
-      source: string;
-    };
-  };
-  iconData?: IconData[];
-  iconOptions?: { getIcon?: AnyFunction; getPosition?: AnyFunction; getSize?: AnyFunction };
-  onIconClick?: AnyFunction;
-  pathData?: PathData[];
-  textData?: TextData[];
-  geojsonData: GeojsonData | GeojsonData[];
-  heatmapData?: HeatmapData[];
-  tripsData?: TripsData[];
-  tripsAnimationSpeed: number;
-  trailLength: number;
-  loopLength: number;
-  editData?: AnyObject;
-  editMode?: EditorMode;
-  onEdit?: ({
-    updatedData,
-    editType,
-    featureIndexes,
-    editContext,
-  }: {
-    updatedData: any;
-    editType: any;
-    featureIndexes: any;
-    editContext: any;
-  }) => void;
-  viewState?: any;
-  initialViewState?: any;
-  defaultViewState?: any;
-  onViewStateChange?: AnyFunction;
-  onMapLoad?: AnyFunction;
-  onStaticMapLoad?: AnyFunction;
-  onMapClick?: <D>(info: PickInfo<D>, pickedInfos: PickInfo<D>[], e: MouseEvent) => any;
-  onMapHover?: <D>(info: PickInfo<D>, pickedInfos: PickInfo<D>[], e: MouseEvent) => any;
-  getCursor: ((interactiveState: InteractiveState) => string) | undefined;
-  layers?: Layer<any>;
-  children: JSX.Element | JSX.Element[];
-};
+import { BasicProps, MapGLComponent } from './MapGLComponent';
 
 type State = {
   viewState: any;
@@ -88,10 +34,9 @@ type State = {
 };
 
 const DEFAULT_LOOP_LENGTH = 100;
-const DEFAULT_TRAIL_LENGTH = 100;
 const DEFAULT_TRIPS_ANIMATION_SPEED = 1;
 
-export class MapGL extends PureComponent<Props, State> {
+export class MapGL extends PureComponent<BasicProps, State> {
   private animationId?: any;
   constructor(props: Props) {
     super(props);
@@ -111,9 +56,7 @@ export class MapGL extends PureComponent<Props, State> {
       viewState.pitch !== this.props.viewState.pitch ||
       viewState.bearing !== this.props.viewState.bearing
     ) {
-      this.setState({
-        viewState,
-      });
+      this.setViewState(viewState);
     }
   }
 
@@ -124,6 +67,12 @@ export class MapGL extends PureComponent<Props, State> {
   componentWillUnmount() {
     window.cancelAnimationFrame(this.animationId);
   }
+
+  setViewState = (viewState: any) => {
+    this.setState({
+      viewState,
+    });
+  };
 
   animate = () => {
     const {
@@ -137,83 +86,8 @@ export class MapGL extends PureComponent<Props, State> {
   };
 
   render() {
-    const {
-      width,
-      height,
-      initialViewState,
-      mapStyle,
-      iconData,
-      iconOptions,
-      onIconClick,
-      geojsonData,
-      pathData,
-      textData,
-      heatmapData,
-      tripsData,
-      trailLength = DEFAULT_TRAIL_LENGTH,
-      editData,
-      editMode,
-      onEdit,
-      viewState: _viewState,
-      onViewStateChange,
-      onMapLoad,
-      onStaticMapLoad,
-      onMapClick,
-      onMapHover,
-      getCursor,
-      layers,
-      children,
-    } = this.props;
     const { viewState, time } = this.state;
-
-    return (
-      <AutoSizer width={width} height={height}>
-        {({ width: _width, height: _height }) => (
-          <DeckGL
-            width={_width}
-            height={_height}
-            useDevicePixels={false}
-            initialViewState={initialViewState}
-            viewState={viewState}
-            getCursor={getCursor}
-            controller
-            onViewStateChange={({ viewState: vs }) => {
-              if (onViewStateChange) {
-                onViewStateChange(vs);
-                if (_viewState) {
-                  return;
-                }
-              }
-              this.setState({
-                viewState: vs,
-              });
-            }}
-            layers={[
-              ...getGeojsonLayer(geojsonData),
-              ...getIconLayer(iconData, { onClick: onIconClick }, iconOptions),
-              ...getPathLayer(pathData),
-              ...getHeatmapLayer(heatmapData),
-              ...getTripsLayer(
-                (tripsData || []).map((data) => ({
-                  trailLength,
-                  ...data,
-                  currentTime: time,
-                })),
-              ),
-              ...getTextLayer(textData),
-              ...(Array.isArray(layers) ? layers : []),
-              ...getEditableGeoJsonLayer({ data: editData, mode: editMode }, { onEdit }),
-            ]}
-            onLoad={onMapLoad}
-            onClick={onMapClick}
-            onHover={onMapHover}
-          >
-            <StaticMap key="static-map" mapStyle={getMapStyle(mapStyle)} onLoad={onStaticMapLoad} />
-            {children}
-          </DeckGL>
-        )}
-      </AutoSizer>
-    );
+    return <MapGLComponent {...this.props} viewState={viewState} time={time} setViewState={this.setViewState} />;
   }
 }
 
