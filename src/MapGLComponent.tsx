@@ -219,12 +219,11 @@ export const MapGLComponent = memo(
         if (mergeLayers && mergeLayers.length) {
           const allLayers = map.getStyle().layers;
           const index = allLayers
-            .map((d) => {
+            .map((d: any) => {
               return d.type;
             })
             .lastIndexOf('raster');
           const beforeLayerId = allLayers[index + 1]?.id || null;
-          console.log(beforeLayerId);
           mergeLayers.forEach((l) => {
             map.addLayer(
               // This id has to match the id of the deck.gl layer
