@@ -39,6 +39,7 @@
     "@deck.gl/extensions": "^8.4.19",
     "@deck.gl/geo-layers": "^8.4.19",
     "@deck.gl/layers": "^8.4.19",
+    "@deck.gl/mapbox": "^8.4.20",
     "@deck.gl/mesh-layers": "^8.4.19",
     "@deck.gl/react": "^8.4.19",
     "@nebula.gl/layers": "^0.22.3",
