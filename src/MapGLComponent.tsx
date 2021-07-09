@@ -1,4 +1,4 @@
-import React, { memo, useState, useMemo, useRef, useCallback } from 'react';
+import React, { memo, useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import DeckGL from '@deck.gl/react'; // The deck.gl master module includes all submodules except for `@deck.gl/test-utils`.
@@ -209,18 +209,48 @@ export const MapGLComponent = memo(
         onStaticMapLoad(event);
       }
       setMap(event.target);
-      // You must initialize an empty deck.gl layer to prevent flashing
-      if (mergeLayers && mergeLayers.length) {
-        mergeLayers.forEach((l) => {
-          map.addLayer(
-            // This id has to match the id of the deck.gl layer
-            new MapboxLayer({ id: l.id, deck }),
-            // Optionally define id from Mapbox layer stack under which to add deck layer
-            'background',
-          );
-        });
-      }
     }, []);
+
+    useEffect(() => {
+      const map = mapRef.current?.getMap();
+      const deck = deckRef.current?.deck;
+      if (map && deck) {
+        // You must initialize an empty deck.gl layer to prevent flashing
+        if (mergeLayers && mergeLayers.length) {
+          const allLayers = map.getStyle().layers;
+          const index = allLayers
+            .map((d) => {
+              return d.type;
+            })
+            .lastIndexOf('raster');
+          const beforeLayerId = allLayers[index + 1]?.id || null;
+          console.log(beforeLayerId);
+          mergeLayers.forEach((l) => {
+            map.addLayer(
+              // This id has to match the id of the deck.gl layer
+              new MapboxLayer({ id: l.id, deck }),
+              // Optionally define id from Mapbox layer stack under which to add deck layer
+              beforeLayerId,
+            );
+          });
+        }
+      }
+      return () => {};
+    }, [
+      iconData,
+      geojsonData,
+      pathData,
+      textData,
+      heatmapData,
+      tripsData,
+      editData,
+      topLayers,
+      layers,
+      bottomLayers,
+      children,
+      clusterLayers,
+      map,
+    ]);
 
     return (
       <AutoSizer width={width} height={height}>
