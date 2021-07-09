@@ -6,7 +6,7 @@
  * @Description: 
  */
 
-// @ts-ignore
+// @ts-nocheck
 (function() {
     'use strict';
   

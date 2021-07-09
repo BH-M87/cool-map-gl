@@ -142,8 +142,8 @@ export const MapGLComponent = memo(
     clusterLayers,
   }: Props) => {
     const [map, setMap] = useState<any>(null);
-    const deckRef = useRef(null);
-    const mapRef = useRef(null);
+    const deckRef = useRef<any>(null);
+    const mapRef = useRef<any>(null);
     const [glContext, setGLContext] = useState();
     const [measureLayers] = useMeasure(measureConfig);
     const [clusterMapStyle] = useCluster(clusterLayers, map, setViewState, onIconClick);
@@ -183,8 +183,8 @@ export const MapGLComponent = memo(
       ...(Array.isArray(topLayers) ? topLayers : []),
     ];
     const onMapboxMapLoad = useCallback((event: any) => {
-      const map = mapRef.current.getMap();
-      const deck = deckRef.current.deck;
+      const map = mapRef.current?.getMap();
+      const deck = deckRef.current?.deck;
       map.addLayer({
         id: 'background',
         type: 'background',
@@ -207,13 +207,13 @@ export const MapGLComponent = memo(
           );
         });
       } else {
-        const layer = new LineLayer({
+        new LineLayer({
           id: 'empty-layer',
           data: [],
           pickable: true,
           getWidth: 50,
-          getSourcePosition: (d) => d.coordinates,
-          getTargetPosition: (d) => d.coordinates,
+          getSourcePosition: (d: any) => d.coordinates,
+          getTargetPosition: (d: any) => d.coordinates,
           getColor: (d) => [0, 140, 0],
         });
         map.addLayer(
@@ -249,6 +249,7 @@ export const MapGLComponent = memo(
             onLoad={onMapLoad}
             onClick={onMapClick}
             onHover={onMapHover}
+            // @ts-ignore
             onWebGLInitialized={setGLContext}
             glOptions={{
               antialias: true,
@@ -261,6 +262,7 @@ export const MapGLComponent = memo(
           >
             {glContext && (
               <StaticMap
+                // @ts-ignore
                 ref={mapRef}
                 gl={glContext}
                 key="static-map"
