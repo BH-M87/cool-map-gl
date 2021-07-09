@@ -1,8 +1,9 @@
-import React, { memo, useState, useMemo } from 'react';
+import React, { memo, useState, useMemo, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import DeckGL from '@deck.gl/react'; // The deck.gl master module includes all submodules except for `@deck.gl/test-utils`.
 import { Layer } from '@deck.gl/core';
+import { LineLayer } from '@deck.gl/layers';
 import { InteractiveState, PickInfo } from '@deck.gl/core/lib/deck';
 import { StaticMap } from 'react-map-gl';
 import getMapStyle from './libs/getMapStyle';
@@ -29,6 +30,7 @@ import { useMeasure } from './hooks/useMeasure';
 import { useCluster } from './hooks/useCluster';
 
 import { fromJS } from 'immutable';
+import { MapboxLayer } from '@deck.gl/mapbox';
 
 export type BasicProps = {
   width?: number;
@@ -139,6 +141,9 @@ export const MapGLComponent = memo(
     clusterLayers,
   }: Props) => {
     const [map, setMap] = useState<any>(null);
+    const deckRef = useRef(null);
+    const mapRef = useRef(null);
+    const [glContext, setGLContext] = useState();
     const [measureLayers] = useMeasure(measureConfig);
     const [clusterMapStyle] = useCluster(clusterLayers, map, setViewState, onIconClick);
 
@@ -157,18 +162,79 @@ export const MapGLComponent = memo(
       }
       return fromJS(mapStyleMerged);
     }, [mapStyle, clusterMapStyle]);
+    const mergeLayers = [
+      ...(Array.isArray(bottomLayers) ? bottomLayers : []),
+      ...getGeojsonLayer(geojsonData),
+      ...getIconLayer(iconData, { onClick: onIconClick }, iconOptions),
+      ...getPathLayer(pathData),
+      ...getHeatmapLayer(heatmapData),
+      ...getTripsLayer(
+        (tripsData || []).map((data) => ({
+          trailLength,
+          ...data,
+          currentTime: time,
+        })),
+      ),
+      ...getTextLayer(textData),
+      ...(Array.isArray(layers) ? layers : []),
+      ...getEditableGeoJsonLayer({ data: editData, mode: editMode }, { onEdit }),
+      ...measureLayers,
+      ...(Array.isArray(topLayers) ? topLayers : []),
+    ];
+    const onMapboxMapLoad = useCallback((event: any) => {
+      const map = mapRef.current.getMap();
+      const deck = deckRef.current.deck;
+      map.addLayer({
+        id: 'background',
+        type: 'background',
+        paint: {
+          'background-opacity': 0,
+        },
+      });
+      if (onStaticMapLoad) {
+        onStaticMapLoad(event);
+      }
+      setMap(event.target);
+      // You must initialize an empty deck.gl layer to prevent flashing
+      if (mergeLayers && mergeLayers.length) {
+        mergeLayers.forEach((l) => {
+          map.addLayer(
+            // This id has to match the id of the deck.gl layer
+            new MapboxLayer({ id: l.id, deck }),
+            // Optionally define id from Mapbox layer stack under which to add deck layer
+            'background',
+          );
+        });
+      } else {
+        const layer = new LineLayer({
+          id: 'empty-layer',
+          data: [],
+          pickable: true,
+          getWidth: 50,
+          getSourcePosition: (d) => d.coordinates,
+          getTargetPosition: (d) => d.coordinates,
+          getColor: (d) => [0, 140, 0],
+        });
+        map.addLayer(
+          // This id has to match the id of the deck.gl layer
+          new MapboxLayer({ id: 'empty-layer', deck }),
+          // Optionally define id from Mapbox layer stack under which to add deck layer
+          'background',
+        );
+      }
+    }, []);
 
     return (
       <AutoSizer width={width} height={height}>
         {({ width: _width, height: _height }) => (
           <DeckGL
+            ref={deckRef}
             width={_width}
             height={_height}
-            useDevicePixels={false}
             initialViewState={initialViewState}
             viewState={viewState}
             getCursor={getCursor}
-            controller
+            controller={true}
             onViewStateChange={({ viewState: vs }) => {
               if (onViewStateChange) {
                 onViewStateChange(vs);
@@ -178,39 +244,29 @@ export const MapGLComponent = memo(
               }
               setViewState(vs);
             }}
-            layers={[
-              ...(Array.isArray(bottomLayers) ? bottomLayers : []),
-              ...getGeojsonLayer(geojsonData),
-              ...getIconLayer(iconData, { onClick: onIconClick }, iconOptions),
-              ...getPathLayer(pathData),
-              ...getHeatmapLayer(heatmapData),
-              ...getTripsLayer(
-                (tripsData || []).map((data) => ({
-                  trailLength,
-                  ...data,
-                  currentTime: time,
-                })),
-              ),
-              ...getTextLayer(textData),
-              ...(Array.isArray(layers) ? layers : []),
-              ...getEditableGeoJsonLayer({ data: editData, mode: editMode }, { onEdit }),
-              ...measureLayers,
-              ...(Array.isArray(topLayers) ? topLayers : []),
-            ]}
+            layers={mergeLayers}
             onLoad={onMapLoad}
             onClick={onMapClick}
             onHover={onMapHover}
+            onWebGLInitialized={setGLContext}
+            glOptions={{
+              antialias: true,
+              alpha: true,
+              premultipliedAlpha: true,
+              // preserveDrawingBuffer: true,
+              /* To render vector tile polygons correctly */
+              stencil: true,
+            }}
           >
-            <StaticMap
-              key="static-map"
-              mapStyle={mapStyleMerged}
-              onLoad={(event: any) => {
-                if (onStaticMapLoad) {
-                  onStaticMapLoad(event);
-                }
-                setMap(event.target);
-              }}
-            />
+            {glContext && (
+              <StaticMap
+                ref={mapRef}
+                gl={glContext}
+                key="static-map"
+                mapStyle={mapStyleMerged}
+                onLoad={onMapboxMapLoad}
+              />
+            )}
             {children}
           </DeckGL>
         )}
