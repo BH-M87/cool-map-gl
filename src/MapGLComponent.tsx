@@ -5,7 +5,6 @@ import DeckGL from '@deck.gl/react'; // The deck.gl master module includes all s
 import { Layer } from '@deck.gl/core';
 import { InteractiveState, PickInfo } from '@deck.gl/core/lib/deck';
 import { StaticMap } from 'react-map-gl';
-import systemDefaultViewState from './config/systemDefaultViewState';
 import getMapStyle from './libs/getMapStyle';
 import AutoSizer from './utils/AutoSizer';
 import getIconLayer from './layers/getIconLayer';
