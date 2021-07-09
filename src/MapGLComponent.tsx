@@ -182,6 +182,19 @@ export const MapGLComponent = memo(
       ...measureLayers,
       ...(Array.isArray(topLayers) ? topLayers : []),
     ];
+    if (!mergeLayers.length) {
+      mergeLayers.push(
+        new LineLayer({
+          id: 'empty-layer',
+          data: [],
+          pickable: true,
+          getWidth: 50,
+          getSourcePosition: (d: any) => d.coordinates,
+          getTargetPosition: (d: any) => d.coordinates,
+          getColor: (d) => [0, 140, 0],
+        }),
+      );
+    }
     const onMapboxMapLoad = useCallback((event: any) => {
       const map = mapRef.current?.getMap();
       const deck = deckRef.current?.deck;
@@ -206,22 +219,6 @@ export const MapGLComponent = memo(
             'background',
           );
         });
-      } else {
-        new LineLayer({
-          id: 'empty-layer',
-          data: [],
-          pickable: true,
-          getWidth: 50,
-          getSourcePosition: (d: any) => d.coordinates,
-          getTargetPosition: (d: any) => d.coordinates,
-          getColor: (d) => [0, 140, 0],
-        });
-        map.addLayer(
-          // This id has to match the id of the deck.gl layer
-          new MapboxLayer({ id: 'empty-layer', deck }),
-          // Optionally define id from Mapbox layer stack under which to add deck layer
-          'background',
-        );
       }
     }, []);
 
