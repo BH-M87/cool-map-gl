@@ -226,7 +226,6 @@ export class MeasureAreaMode extends DrawPolygonMode {
     const clickSequence = this.getClickSequence();
     if (!active) {
       if (!this._isMeasuringSessionFinished) {
-        debugger;
         if (context) {
           context.deck.viewManager.controllers['default-view'].doubleClickZoom = true;
         }
