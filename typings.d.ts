@@ -5,6 +5,7 @@
 // import { default as Texture2D } from '@luma.gl/webgl/classes/texture-2d';
 import { RGBAColor } from '@deck.gl/aggregation-layers/utils/color-utils';
 import { DataSet } from '@deck.gl/core/lib/layer';
+import { HeatmapLayerProps } from '@deck.gl/aggregation-layers/heatmap-layer/heatmap-layer';
 import { GeoJsonLayerProps } from '@deck.gl/layers/geojson-layer/geojson-layer';
 import { LayerPath, PathLayerProps } from '@deck.gl/layers/path-layer/path-layer';
 import { TextLayerProps } from '@deck.gl/layers/text-layer/text-layer';
@@ -85,7 +86,7 @@ type IconData = {
   getPosition?: AnyFunction;
   getSize?: AnyFunction;
 };
-type HeatmapData = { COORDINATES: Position; WEIGHT: number };
+type HeatmapData = HeatmapLayerProps<unknown>;
 type PathData = PathLayerProps<unknown> & {
   dash?: Boolean;
   extensions?: any[];

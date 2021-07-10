@@ -1,7 +1,7 @@
 import { HeatmapLayer } from '@deck.gl/aggregation-layers';
 import { HeatmapData } from 'typings';
 
-export default (data?: HeatmapData[]) => {
+export default (data?: HeatmapData[] | HeatmapData) => {
   /**
    * Data format:
    * [
@@ -9,15 +9,17 @@ export default (data?: HeatmapData[]) => {
    *   ...
    * ]
    */
-  if (!Array.isArray(data) || data.length === 0) {
+  if (data === undefined || data === null) {
     return [];
   }
-  return [
+  const getLayer = (_data: HeatmapData, index: number = 0) => [
     new HeatmapLayer({
-      id: 'heatmapLayer',
-      data,
-      getPosition: (d) => d.COORDINATES,
-      getWeight: (d) => d.WEIGHT,
+      id: `heatmap-layer-${index}`,
+      ..._data,
     }),
   ];
+  if (Array.isArray(data)) {
+    return data.map((item = { data: [] }, index) => (item ? getLayer(item, index) : null));
+  }
+  return [getLayer(data)];
 };
