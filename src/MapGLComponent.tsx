@@ -141,9 +141,9 @@ export const MapGLComponent = memo(
     clusterLayers,
   }: Props) => {
     const [map, setMap] = useState<any>(null);
+    const [glContext, setGLContext] = useState();
     const deckRef = useRef<any>(null);
     const mapRef = useRef<any>(null);
-    const [glContext, setGLContext] = useState();
     const [measureLayers] = useMeasure(measureConfig);
     const [clusterMapStyle] = useCluster(clusterLayers, map, setViewState, onIconClick);
 
@@ -196,7 +196,6 @@ export const MapGLComponent = memo(
     }
     const onMapboxMapLoad = useCallback((event: any) => {
       const map = mapRef.current?.getMap();
-      const deck = deckRef.current?.deck;
       map.addLayer({
         id: 'background',
         type: 'background',
