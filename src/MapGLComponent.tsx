@@ -196,6 +196,7 @@ export const MapGLComponent = memo(
     }
     const onMapboxMapLoad = useCallback((event: any) => {
       const map = mapRef.current?.getMap();
+      const deck = deckRef.current?.deck;
       map.addLayer({
         id: 'background',
         type: 'background',
@@ -206,6 +207,7 @@ export const MapGLComponent = memo(
       if (onStaticMapLoad) {
         onStaticMapLoad(event);
       }
+      event.target.deck = deck;
       setMap(event.target);
     }, []);
 
@@ -222,17 +224,26 @@ export const MapGLComponent = memo(
             })
             .lastIndexOf('raster');
           const beforeLayerId = allLayers[index + 1]?.id || null;
-          mergeLayers.forEach((l) => {
-            map.addLayer(
-              // This id has to match the id of the deck.gl layer
-              new MapboxLayer({ id: l.id, deck }),
-              // Optionally define id from Mapbox layer stack under which to add deck layer
-              beforeLayerId,
-            );
+          mergeLayers.forEach(l => {
+            !map.getLayer(l.id) &&
+              map.addLayer(
+                // This id has to match the id of the deck.gl layer
+                new MapboxLayer({ id: l.id, deck }),
+                // Optionally define id from Mapbox layer stack under which to add deck layer
+                beforeLayerId,
+              );
           });
         }
       }
-      return () => {};
+      return () => {
+        mergeLayers.forEach(l => {
+          map?.getLayer(l.id) && map?.removeLayer(l.id);
+        });
+        clusterMapStyle?.originLayers.forEach((l: any) => {
+          l.remove();
+        });
+        // console.log('地图组件被销毁');
+      };
     }, [
       iconData,
       geojsonData,
@@ -276,7 +287,7 @@ export const MapGLComponent = memo(
             // @ts-ignore
             onWebGLInitialized={setGLContext}
             glOptions={{
-              antialias: true,
+              antialias: false,
               alpha: true,
               premultipliedAlpha: true,
               // preserveDrawingBuffer: true,

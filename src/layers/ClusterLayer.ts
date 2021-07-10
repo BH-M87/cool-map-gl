@@ -5,101 +5,6 @@
  * @LastEditTime: 2021-07-10 00:51:31
  * @Description:
  */
-// @ts-nocheck
-(function () {
-  'use strict';
-
-  // save the original methods before overwriting them
-  Element.prototype._addEventListener = Element.prototype.addEventListener;
-  Element.prototype._removeEventListener = Element.prototype.removeEventListener;
-
-  /**
-   * [addEventListener description]
-   * @param {[type]}  type       [description]
-   * @param {[type]}  listener   [description]
-   * @param {Boolean} useCapture [description]
-   */
-  Element.prototype.addEventListener = function (
-    type: string | number,
-    listener: (this: Element, ev: any) => any,
-    useCapture = false,
-  ) {
-    // declare listener
-    this._addEventListener(type, listener, useCapture);
-
-    if (!this.eventListenerList) this.eventListenerList = {};
-    if (!this.eventListenerList[type]) this.eventListenerList[type] = [];
-
-    // add listener to  event tracking list
-    this.eventListenerList[type].push({ type, listener, useCapture });
-  };
-
-  /**
-   * [removeEventListener description]
-   * @param  {[type]}  type       [description]
-   * @param  {[type]}  listener   [description]
-   * @param  {Boolean} useCapture [description]
-   * @return {[type]}             [description]
-   */
-  Element.prototype.removeEventListener = function (
-    type: string | number,
-    listener: (this: Element, ev: any) => any,
-    useCapture = false,
-  ) {
-    // remove listener
-    this._removeEventListener(type, listener, useCapture);
-
-    if (!this.eventListenerList) this.eventListenerList = {};
-    if (!this.eventListenerList[type]) this.eventListenerList[type] = [];
-
-    // Find the event in the list, If a listener is registered twice, one
-    // with capture and one without, remove each one separately. Removal of
-    // a capturing listener does not affect a non-capturing version of the
-    // same listener, and vice versa.
-    for (let i = 0; i < this.eventListenerList[type].length; i++) {
-      if (
-        this.eventListenerList[type][i].listener === listener &&
-        this.eventListenerList[type][i].useCapture === useCapture
-      ) {
-        this.eventListenerList[type].splice(i, 1);
-        break;
-      }
-    }
-    // if no more events of the removed event type are left,remove the group
-    if (this.eventListenerList[type].length == 0) delete this.eventListenerList[type];
-  };
-
-  /**
-   * [getEventListeners description]
-   * @param  {[type]} type [description]
-   * @return {[type]}      [description]
-   */
-  Element.prototype.getEventListeners = function (type) {
-    if (!this.eventListenerList) this.eventListenerList = {};
-
-    // return reqested listeners type or all them
-    if (type === undefined) return this.eventListenerList;
-    return this.eventListenerList[type];
-  };
-
-  /*
-    Element.prototype.clearEventListeners = function(a){
-        if(!this.eventListenerList)
-            this.eventListenerList = {};
-        if(a==undefined){
-            for(var x in (this.getEventListeners())) this.clearEventListeners(x);
-            return;
-        }
-        var el = this.getEventListeners(a);
-        if(el==undefined)
-            return;
-        for(var i = el.length - 1; i >= 0; --i) {
-            var ev = el[i];
-            this.removeEventListener(a, ev.listener, ev.useCapture);
-        }
-    };
-    */
-})();
 export class ClusterLayer {
   id: any;
   getIcon: any;
@@ -124,24 +29,25 @@ export class ClusterLayer {
     this.id = options.id;
     this.setViewState = setViewState;
     this.onIconClick = onIconClick;
+    this.onContainerClick = this.onContainerClick.bind(this);
     this.getIcon =
       options.getIcon ||
-      function () {
+      function() {
         return '';
       };
     this.getPosition =
       options.getPosition ||
-      function () {
+      function() {
         return [0, 0];
       };
     this.getSize =
       options.getSize ||
-      function () {
+      function() {
         return 45;
       };
     this.getClusterBackgroundImage =
       options.getClusterBackgroundImage ||
-      function () {
+      function() {
         return [0, 0];
       };
 
@@ -158,48 +64,50 @@ export class ClusterLayer {
   }
 
   setData(data: any) {
-    return this.formatToGeoJson(data).then((geojson) => {
+    return this.formatToGeoJson(data).then(geojson => {
       //this.map.getSource(this.sourceId).setData(geojson);
       this.sources[this.sourceId].data = geojson;
     });
   }
 
   formatToGeoJson(data: any = []) {
-    var _this = this;
-    return new Promise((resolve) => {
+    const _this = this;
+    return new Promise(resolve => {
       if (data.length === 0) {
         resolve({
           type: 'FeatureCollection',
           features: [],
         });
       } else {
-        let geojsonData: any = {
+        const geojsonData: any = {
           type: 'FeatureCollection',
           features: [],
         };
-        let images: any[] = [];
-        let imageAll = [];
+        const images: any[] = [];
+        const imageAll = [];
 
         imageAll.push(
-          new Promise((resolve) => {
+          new Promise(resolve => {
             this.map.loadImage(this.getClusterBackgroundImage(), (err: any, image: any) => {
               if (err) {
                 resolve(true);
                 return;
               }
-              _this.map.addImage(this.id + 'clusterBg', image);
+              if (!_this.map.hasImage(this.id + 'clusterBg')) {
+                _this.map.addImage(this.id + 'clusterBg', image);
+              }
               resolve(true);
             });
           }),
         );
 
         for (let i = 0; i < data.length; i++) {
-          let iconSize = this.getSize(data[i]);
-          let imageId = this.getIcon(data[i]) + '&&&&' + iconSize;
+          const iconSize = this.getSize(data[i]);
+          const imageId = this.getIcon(data[i]) + '&&&&' + iconSize;
           if (imageId && images.indexOf(imageId) === -1 && !this.map.hasImage(imageId)) {
             images.push(imageId);
           }
-          let feature = {
+          const feature = {
             type: 'Feature',
             properties: {
               ...data[i],
@@ -214,13 +122,13 @@ export class ClusterLayer {
           geojsonData.features.push(feature);
         }
         for (let i = 0; i < images.length; i++) {
-          (function (i) {
+          (function(i) {
             imageAll.push(
               new Promise((resolve, reject) => {
                 if (!_this.map.hasImage(images[i])) {
-                  let imgInfo = images[i].split('&&&&');
-                  let url = imgInfo[0];
-                  let width = parseFloat(imgInfo[1]);
+                  const imgInfo = images[i].split('&&&&');
+                  const url = imgInfo[0];
+                  const width = parseFloat(imgInfo[1]);
                   _this.map.loadImage(url, (err: any, image: any) => {
                     if (err) {
                       console.error('图片加载失败:' + images[i]);
@@ -257,17 +165,18 @@ export class ClusterLayer {
     this.map.removeLayer(this.id + 'cluster-count');
     this.map.removeLayer(this.id + 'cluster-count');
     this.map.removeSource(this.sourceId);
+    this.map.deck.eventManager.off('click', this.onContainerClick);
   }
 
   drill(point: any) {
-    var features = this.map.queryRenderedFeatures(point, {
+    const features = this.map.queryRenderedFeatures(point, {
       layers: [this.id + 'clusters', this.id + 'cluster-count'],
     });
     if (features.length > 0) {
-      let zoom = this.map.getZoom();
-      let clusterZooms = this.clusterZooms;
+      const zoom = this.map.getZoom();
+      const clusterZooms = this.clusterZooms;
       for (let i = 0; i < clusterZooms.length; i++) {
-        let zoomStop = clusterZooms[i] + 1;
+        const zoomStop = clusterZooms[i] + 1;
         if (zoom < zoomStop) {
           const coords = features[0].geometry.coordinates;
           this.setViewState({
@@ -282,7 +191,7 @@ export class ClusterLayer {
   }
 
   getFeature(point: any) {
-    var features = this.map.queryRenderedFeatures(point, {
+    const features = this.map.queryRenderedFeatures(point, {
       layers: [this.id + 'unclustered-point'],
     });
     if (features.length > 0) {
@@ -290,7 +199,20 @@ export class ClusterLayer {
     }
     return null;
   }
-
+  onContainerClick(e: any) {
+    // this.drill({
+    //     x:e.offsetX,
+    //     y:e.offsetY
+    // })
+    this.drill([e.offsetCenter.x, e.offsetCenter.y]);
+    const feature = this.getFeature([e.offsetCenter.x, e.offsetCenter.y]);
+    if (feature) {
+      this.onIconClick({
+        object: feature.properties,
+        event: e,
+      });
+    }
+  }
   run(map: any) {
     this.map = map;
 
@@ -365,16 +287,16 @@ export class ClusterLayer {
       },
     ];
 
-    map.style.glyphManager._doesCharSupportLocalGlyph = function () {
+    map.style.glyphManager._doesCharSupportLocalGlyph = function() {
       return true;
     };
 
-    let _tinySDF = map.style.glyphManager._tinySDF;
+    const _tinySDF = map.style.glyphManager._tinySDF;
     if (!_tinySDF.rewrite) {
-      map.style.glyphManager._tinySDF = function (e: any, i: any, o: any) {
-        let res = _tinySDF.call(this, e, i, o);
+      map.style.glyphManager._tinySDF = function(e: any, i: any, o: any) {
+        const res = _tinySDF.call(this, e, i, o);
         let advance = 24;
-        let id = o;
+        const id = o;
         console.log(id);
         if (['f', 'i', 'j', 'l', 'r', 't'].indexOf(String.fromCharCode(id)) > -1) {
           advance = 12;
@@ -393,25 +315,7 @@ export class ClusterLayer {
       map.style.glyphManager._tinySDF.rewrite = true;
     }
 
-    const node = map.getContainer().parentNode.parentNode;
-    node.getEventListeners().click &&
-      node.getEventListeners().click.forEach((e: any) => {
-        node.removeEventListener('click', e.listener);
-      });
-    node.addEventListener('click', (e: any) => {
-      // this.drill({
-      //     x:e.offsetX,
-      //     y:e.offsetY
-      // })
-      this.drill([e.offsetX, e.offsetY]);
-      let feature = this.getFeature([e.offsetX, e.offsetY]);
-      if (feature) {
-        this.onIconClick({
-          object: feature.properties,
-          event: e,
-        });
-      }
-    });
+    this.map.deck.eventManager.on('click', this.onContainerClick);
 
     return this.setData(this.data).then(() => {
       return this;
@@ -420,10 +324,10 @@ export class ClusterLayer {
 }
 
 export function resizeImage(width: number, height: number, image: any) {
-  let canvas = document.createElement('canvas');
+  const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
-  let ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d');
   ctx?.drawImage(image, 0, 0, image.width, image.height, 0, 0, width, height);
   return ctx?.getImageData(0, 0, width, height);
 }
@@ -434,13 +338,13 @@ export function parseClusterConfig(config: any, map: any, setViewState: any, onI
 }
 
 export function createDefaultClusterBgImage(r: number, g: number, b: number) {
-  let canvas = document.createElement('canvas');
+  const canvas = document.createElement('canvas');
   //稍微大点，防止失真
   canvas.width = 100;
   canvas.height = 100;
-  let ctx: any = canvas.getContext('2d');
+  const ctx: any = canvas.getContext('2d');
   ctx.beginPath();
-  var grad = ctx.createRadialGradient(50, 50, 0, 50, 50, 50); //创建一个渐变色线性对象
+  const grad = ctx.createRadialGradient(50, 50, 0, 50, 50, 50); //创建一个渐变色线性对象
   grad.addColorStop(0, 'rgba(' + r + ',' + g + ',' + b + ',1)');
   grad.addColorStop(0.7, 'rgba(' + r + ',' + g + ',' + b + ',0.9)'); //定义渐变色颜色
   grad.addColorStop(0.95, 'rgba(' + r + ',' + g + ',' + b + ',0.5)');
