@@ -1,4 +1,4 @@
-import React, { memo, useState, useMemo } from 'react';
+import React, { memo, useState, useMemo, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import DeckGL from '@deck.gl/react'; // The deck.gl master module includes all submodules except for `@deck.gl/test-utils`.
@@ -139,6 +139,7 @@ export const MapGLComponent = memo(
     clusterLayers,
   }: Props) => {
     const [map, setMap] = useState<any>(null);
+    const deckRef = useRef<any>(null);
     const [measureLayers] = useMeasure(measureConfig);
     const [clusterMapStyle] = useCluster(clusterLayers, map, setViewState, onIconClick);
 
@@ -157,11 +158,20 @@ export const MapGLComponent = memo(
       }
       return fromJS(mapStyleMerged);
     }, [mapStyle, clusterMapStyle]);
+    //remove clusterlayer events
+    useEffect(() => {
+      return () => {
+        clusterMapStyle?.originLayers.forEach((l: any) => {
+          l.remove();
+        });
+      };
+    }, [map,clusterLayers]);
 
     return (
       <AutoSizer width={width} height={height}>
         {({ width: _width, height: _height }) => (
           <DeckGL
+            ref={deckRef}
             width={_width}
             height={_height}
             useDevicePixels={false}
@@ -208,6 +218,7 @@ export const MapGLComponent = memo(
                 if (onStaticMapLoad) {
                   onStaticMapLoad(event);
                 }
+                event.target.deck = deckRef.current?.deck;
                 setMap(event.target);
               }}
             />

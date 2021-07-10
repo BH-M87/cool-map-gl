@@ -15,7 +15,8 @@ export function useCluster(clusterLayers:any,map:any, setViewState:any, onIconCl
 
     const [style ,setStyle] = useState({
         layers:[],
-        sources:{}
+        sources:{},
+        originLayers:[]
     });
     
     useEffect(() => {
@@ -41,7 +42,8 @@ export function useCluster(clusterLayers:any,map:any, setViewState:any, onIconCl
                 //if(!destroyedRef.current){
                     setStyle({
                         sources,
-                        layers
+                        layers,
+                        originLayers:results
                     });
                 //}
             });

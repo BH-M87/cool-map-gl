@@ -257,6 +257,7 @@ export class ClusterLayer {
     this.map.removeLayer(this.id + 'cluster-count');
     this.map.removeLayer(this.id + 'cluster-count');
     this.map.removeSource(this.sourceId);
+    this.map.deck.eventManager.off('click', this.onContainerClick);
   }
 
   drill(point: any) {
@@ -290,6 +291,21 @@ export class ClusterLayer {
     }
     return null;
   }
+
+  onContainerClick = (e: any) => {
+    // this.drill({
+    //     x:e.offsetX,
+    //     y:e.offsetY
+    // })
+    this.drill([e.offsetCenter.x, e.offsetCenter.y]);
+    let feature = this.getFeature([e.offsetCenter.x, e.offsetCenter.y]);
+    if (feature) {
+      this.onIconClick({
+        object: feature.properties,
+        event: e,
+      });
+    }
+  };
 
   run(map: any) {
     this.map = map;
@@ -392,26 +408,7 @@ export class ClusterLayer {
       };
       map.style.glyphManager._tinySDF.rewrite = true;
     }
-
-    const node = map.getContainer().parentNode.parentNode;
-    node.getEventListeners().click &&
-      node.getEventListeners().click.forEach((e: any) => {
-        node.removeEventListener('click', e.listener);
-      });
-    node.addEventListener('click', (e: any) => {
-      // this.drill({
-      //     x:e.offsetX,
-      //     y:e.offsetY
-      // })
-      this.drill([e.offsetX, e.offsetY]);
-      let feature = this.getFeature([e.offsetX, e.offsetY]);
-      if (feature) {
-        this.onIconClick({
-          object: feature.properties,
-          event: e,
-        });
-      }
-    });
+    this.map.deck.eventManager.on('click', this.onContainerClick);
 
     return this.setData(this.data).then(() => {
       return this;
