@@ -161,11 +161,14 @@ export class ClusterLayer {
   }
 
   remove() {
-    this.map.removeLayer(this.id + 'clusters');
-    this.map.removeLayer(this.id + 'cluster-count');
-    this.map.removeLayer(this.id + 'cluster-count');
-    this.map.removeSource(this.sourceId);
     this.map.deck.eventManager.off('click', this.onContainerClick);
+  }
+
+  distroy() {
+    this.map.getLayer(this.id + 'clusters') && this.map.removeLayer(this.id + 'clusters');
+    this.map.getLayer(this.id + 'cluster-count') && this.map.removeLayer(this.id + 'cluster-count');
+    this.map.getLayer(this.id + 'cluster-count') && this.map.removeLayer(this.id + 'cluster-count');
+    this.map.removeSource(this.sourceId);
   }
 
   drill(point: any) {
