@@ -16,10 +16,6 @@ export default (data?: HeatmapData[] | HeatmapData) => {
     new HeatmapLayer({
       id: `heatmap-layer-${index}`,
       ..._data,
-      data: ((_data.data || []) as any[]).filter((_d) => {
-        const position = _d.getPosition ? _d.getPosition(_d) : undefined;
-        return position && !isNaN(position[0]) && !isNaN(position[1]);
-      }),
     });
   if (Array.isArray(data)) {
     return data.map((item = { data: [] }, index) => (item ? getLayer(item, index) : null));
