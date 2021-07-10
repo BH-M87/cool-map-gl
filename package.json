@@ -1,6 +1,6 @@
 {
   "name": "cool-map-gl",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A map based on deck.gl and mapbox.gl.",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
