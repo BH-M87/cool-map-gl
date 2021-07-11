@@ -181,13 +181,15 @@ export class ClusterLayer {
         let imageAll = [];
 
         imageAll.push(
-          new Promise((resolve) => {
+          new Promise(resolve => {
             this.map.loadImage(this.getClusterBackgroundImage(), (err: any, image: any) => {
               if (err) {
                 resolve(true);
                 return;
               }
-              _this.map.addImage(this.id + 'clusterBg', image);
+              if (!_this.map.hasImage(this.id + 'clusterBg')) {
+                _this.map.addImage(this.id + 'clusterBg', image);
+              }
               resolve(true);
             });
           }),
