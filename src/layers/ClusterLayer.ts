@@ -317,7 +317,6 @@ export class ClusterLayer {
       };
       map.style.glyphManager._tinySDF.rewrite = true;
     }
-
     this.map.deck.eventManager.on('click', this.onContainerClick);
 
     return this.setData(this.data).then(() => {
